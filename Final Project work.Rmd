@@ -1,0 +1,69 @@
+---
+title: "Untitled"
+author: "Brant Armstrong"
+date: "2022-12-08"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(DT)
+library(psych)
+library(shiny)
+library(shinydashboard)
+```
+
+```{r, cache=TRUE}
+
+coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
+
+vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number","company", "altitude", "region", "producer", "number_of_bags", "bag_weight", "in_country_partner", "harvest_year", "owner_1","certification_body", "certification_address", "certification_contact", "unit_of_measurement", "altitude_low_meters", "altitude_high_meters")
+vec_factors = c("species", "country_of_origin","variety", "processing_method", "color", "day", "quakers")
+
+df_coffee <- coffee_ratings %>% 
+  #Removing non-predictive variables
+  select(-vec_remove_variables) %>% 
+  #Creating a day variable for when coffee graded
+  mutate(day = wday(mdy(grading_date), label = TRUE, abbr = FALSE)) %>% 
+  #Removing unneeded variables
+  select(-c("grading_date","expiration")) %>%
+  #Changing categorical variables to factors
+  mutate(across(vec_factors, factor)) %>%
+  #Removing incomplete observations
+  drop_na() %>%
+  #Removing impossible altitude values
+  filter(altitude_mean_meters < 4200)
+
+df_coffee
+```
+
+
+```{r, cache= TRUE}
+df_lollipop <- df_coffee %>%
+  group_by(country_of_origin) %>%
+  summarise(aroma = mean(aroma), flavor = mean(flavor), aftertaste = mean(aftertaste), acidity = mean(acidity), body = mean(body), 
+            balance = mean(balance), uniformity = mean(uniformity), clean_cup = mean(clean_cup), sweetness = mean(sweetness), 
+            moisture = mean(moisture))
+
+df_lollipop_long <- df_lollipop %>% pivot_longer(-country_of_origin, names_to = "Category", values_to = "average_value")
+df_lollipop_long
+
+df_lollipop_long %>% 
+ filter(country_of_origin == "Brazil") %>%
+  ggplot(aes(x=Category, y = average_value)) +
+  geom_segment( aes(x=Category, xend=Category, y=0, yend=average_value), color="brown") +
+  geom_point( color="brown", size=4, alpha=0.6) +
+  theme_light() +
+  coord_flip() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+df_coffee %>% 
+ filter(country_of_origin == "Brazil") %>%
+  describe()
+```
+
