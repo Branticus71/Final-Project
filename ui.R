@@ -12,7 +12,6 @@ ui <- dashboardPage(skin = "midnight",
                       menuItem("About", tabName = "about", icon = icon("mug-hot")),
                       menuItem("Variable Information", tabName = "var", icon = icon("eye"),
                                menuSubItem("Total Cup Points", tabName = "score"),
-                               menuSubItem("Species", tabName = "species"),
                                menuSubItem("Variety", tabName = "variety"),
                                menuSubItem("Processing Method", tabName = "process"),
                                menuSubItem("Aroma", tabName = "aroma"),
@@ -23,7 +22,7 @@ ui <- dashboardPage(skin = "midnight",
                                menuSubItem("Balance", tabName = "balance"),
                                menuSubItem("Uniformity", tabName = "uniformity"),
                                menuSubItem("Sweetness", tabName = "sweetness"),
-                               menuSubItem("Cup Points", tabName = "score"),
+                               menuSubItem("Clean Cup", tabName = "clean"),
                                menuSubItem("Cupper Points", tabName = "points"),
                                menuSubItem("Moisture", tabName = "moisture"),
                                menuSubItem("Category One Defects", tabName = "cat1"),
@@ -31,7 +30,8 @@ ui <- dashboardPage(skin = "midnight",
                                menuSubItem("Quakers", tabName = "quakers"),
                                menuSubItem("Color", tabName = "color"),
                                menuSubItem("Altitude", tabName = "altitude"),
-                               menuSubItem("Day", tabName = "day")
+                               menuSubItem("Day", tabName = "day"),
+                               menuSubItem("Year", tabName = "year")
                                ),
                       menuItem("Data Exploration", tabName = "exp",icon = icon("square-poll-vertical")),
                       menuItem("Modeling", tabName = "model",icon = icon("chalkboard-user"),
@@ -51,7 +51,7 @@ ui <- dashboardPage(skin = "midnight",
                                   #add in latex functionality if needed
                                   withMathJax(),
                                   h1("Purpose"),
-                                  p("This app allows a user to interact with a coffee ratings dataset provided by Tidy Tuesdays to explore the data, create models, create predictions, and download the data. The dataset can be found by clicking here."),
+                                  p("This app allows a user to interact with a coffee ratings dataset for arabica coffee beans provided by Tidy Tuesdays to explore the data, create models, create predictions, and download the data. The dataset can be found by clicking here."),
                                   h1("Pages"),
                                   h3("Variable Information"),
                                   p("This page contains a tab for each variable in the dataset. In each tab, the user can find a definition of the variable along with summary statistics."),
@@ -66,7 +66,174 @@ ui <- dashboardPage(skin = "midnight",
                                   p("Finally, the Data page will allow the user to create a subset of the data then download the result as a .csv file.")
                                 )
                         ),
-                        tabItem(tabName = "var"),
+                        tabItem(tabName = "score",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("Total Cup Points is the sum of a particular cups scores in the aroma, flavor, aftertaste, acidity, body, balance, uniformity, clean_cup, sweetness, and cupper points variables and is the rating for that cup of coffee."),
+                                  plotOutput("scorePlot"),
+                                  tableOutput("scoreTable")
+                                )
+                                ),
+                        tabItem(tabName = "variety",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("Variety is a categorical variable containing the variety of the coffee bean used. Varieties are distinct from species in that they are man made as opposed to naturally occurring. Some common examples are Sumatra, Kona, Bourbon, and Blue Mountain."),
+                                  plotOutput("varietyPlot"),
+                                  tableOutput("varietyTable")
+                                )
+                        ),
+                        tabItem(tabName = "process",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("Processing Method is a categorical variable containing the process used to remove the coffee beans from the fruit that contains them. Each is said to have an effect on the flavor profile of the bean produced."),
+                                  plotOutput("procPlot"),
+                                  tableOutput("procTable")
+                                )
+                        ),
+                        tabItem(tabName = "aroma",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The combined grade of the coffee in Fragrance and Aroma. Fragrance being the smell of the coffee beans before making the coffee and aroma being the smell of the cup of coffee itself."),
+                                  plotOutput("aromaPlot"),
+                                  tableOutput("aromaTable")
+                                )
+                        ),
+                        tabItem(tabName = "flavor",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee in areas of taste. It is evaluated based on intensity, quality, and complexity of the combined taste."),
+                                  plotOutput("flavorPlot"),
+                                  tableOutput("flavorTable")
+                                )
+                        ),
+                        tabItem(tabName = "taste",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee for its aftertaste, specifically the length of time any good flavors persists after swallowing."),
+                                  plotOutput("tastePlot"),
+                                  tableOutput("tasteTable")
+                                )
+                        ),
+                        tabItem(tabName = "acidity",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee for its acidity evaluated in the context of the coffee's flavor profile. So high acidity will result in good ratings in the proper flavor profiles and low ratings in others."),
+                                  plotOutput("acidPlot"),
+                                  tableOutput("acidTable")
+                                )
+                        ),
+                        tabItem(tabName = "body",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee for its body or mouthfeel. This refers to the perceived weight and texture of the coffee so comparisons such as a desirable silky versus an undesirable thin watery texture."),
+                                  plotOutput("bodyPlot"),
+                                  tableOutput("bodyTable")
+                                )
+                        ),
+                        tabItem(tabName = "balance",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee for its balance in taste. This refers to the balance between flavors with preference given to complex flavors that do not overwhelm each other."),
+                                  plotOutput("balancePlot"),
+                                  tableOutput("balanceTable")
+                                )
+                        ),
+                        tabItem(tabName = "uniformity",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee for its uniformity. In each test, five cups are brewed and if they taste different they are deducted points."),
+                                  plotOutput("uniformPlot"),
+                                  tableOutput("uniformTable")
+                                )
+                        ),
+                        tabItem(tabName = "sweetness",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee for its sweetness. The flavor profile of the sweetness changes across types of roasts but must be present and identifiable for a good score."),
+                                  plotOutput("sweetPlot"),
+                                  tableOutput("sweetTable")
+                                )
+                        ),
+                        tabItem(tabName = "clean",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The grade of the coffee for its thorough taste. In each test, five cups are brewed and if the flavor deteriorates from start to finish 2 points are docked from the score."),
+                                  plotOutput("cleanPlot"),
+                                  tableOutput("cleanTable")
+                                )
+                        ),
+                        tabItem(tabName = "points",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The cupper points are simply the grade the tester would give the coffee out of ten without a strict rating system. This is more of a holistic feeling rather than scientific grade."),
+                                  plotOutput("pointsPlot"),
+                                  tableOutput("pointsTable")
+                                )
+                        ),
+                        tabItem(tabName = "moisture",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The moisture content of the coffee beans prior to roasting."),
+                                  plotOutput("moistPlot"),
+                                  tableOutput("moistTable")
+                                )
+                        ),
+                        tabItem(tabName = "cat1",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The number of primary defects in the coffee beans. This could be insect damage, fungus damage, foreign matter, or something else."),
+                                  plotOutput("cat1Plot"),
+                                  tableOutput("cat1Table")
+                                )
+                        ),
+                        tabItem(tabName = "cat2",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The number of secondary defects in the coffee beans. This could be broken beans, partial discoloring, presence of shell, or something else."),
+                                  plotOutput("cat2Plot"),
+                                  tableOutput("cat2Table")
+                                )
+                        ),
+                        tabItem(tabName = "quakers",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The number of quakers in the coffee beans. These are beans that were picked before ripening and cannot roast properly."),
+                                  plotOutput("quakersPlot"),
+                                  tableOutput("quakersTable")
+                                )
+                        ),
+                        tabItem(tabName = "color",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The color of the coffee beans prior to roasting. Certain colors are considered more desirable with a greenish blue color considered ideal by many."),
+                                  plotOutput("colorPlot"),
+                                  tableOutput("colorTable")
+                                )
+                        ),
+                        tabItem(tabName = "altitude",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The average altitude in meters of the coffee farm location. Coffee beans grow slower in higher altitudes which leads to more complex and desirable flavors."),
+                                  plotOutput("altitudePlot"),
+                                  tableOutput("altitudeTable")
+                                )
+                        ),
+                        tabItem(tabName = "day",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The day the coffee was rated."),
+                                  plotOutput("dayPlot"),
+                                  tableOutput("dayTable")
+                                )
+                        ),
+                        tabItem(tabName = "year",
+                                fluidRow(
+                                  h1("Definition"),
+                                  p("The year the coffee was rated."),
+                                  plotOutput("yearPlot"),
+                                  tableOutput("yearTable")
+                                )
+                        ),
                         tabItem(tabName = "exp"),
                         tabItem(tabName = "model"),
                         tabItem(tabName = "data")
