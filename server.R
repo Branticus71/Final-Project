@@ -18,6 +18,7 @@ library(summarytools)
 library(corrr)
 library(DT)
 library(caret)
+trctrl <- trainControl(method = "cv" , number = 10)
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
 vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number",
@@ -365,6 +366,9 @@ shinyServer(function(input, output) {
   train_split <- reactive({
     input$split / 100
   })
+  mtry <- reactive({
+    input$mtry
+  })
   #Creating the split index
   set.seed(666)  
   trainingRowIndex <-
@@ -387,8 +391,12 @@ shinyServer(function(input, output) {
     as.formula(paste(input$SelectY, "~", paste(input$preds, collapse = "+")))
   })
   model_reg <- reactive ({
-    lm(reformulate(input$preds, input$outcome), data = trainingData())
+    train(reformulate(input$preds, input$outcome), data = trainingData(),
+          preProcess = c("center", "scale"),
+          method = "lm",
+          trControl = trctrl)
   })
   output$reg <- renderPrint(summary(model_reg()))
+  
 })
 
