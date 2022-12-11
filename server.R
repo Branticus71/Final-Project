@@ -15,8 +15,8 @@ library(shiny)
 library(shinydashboard)
 library(DescTools)
 library(summarytools)
-
-
+library(corrr)
+library(DT)
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
 vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number",
@@ -41,7 +41,12 @@ df_coffee <- coffee_ratings %>%
   #Removing impossible altitude values
   filter(altitude_mean_meters < 4200)
 
-
+df_continous_sum <- df_coffee %>%
+  group_by(country_of_origin) %>%
+  summarise(aroma = mean(aroma), flavor = mean(flavor), aftertaste = mean(aftertaste), acidity = mean(acidity), 
+            body = mean(body), 
+            balance = mean(balance), uniformity = mean(uniformity), clean_cup = mean(clean_cup), sweetness = mean(sweetness), 
+            moisture = mean(moisture))
 
 shinyServer(function(input, output) {
   
@@ -334,7 +339,7 @@ shinyServer(function(input, output) {
     }
     if(input$plot_type == "boxplot"){
       g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$group)) +
-        geom_boxplot() +
+        geom_boxplot(fill= "grey") +
         geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape))
     }
     if(input$plot_type == "histogram"){
@@ -350,6 +355,9 @@ shinyServer(function(input, output) {
         geom_bar(aes_string(color = df_plot$color))
     }
     g_exp
+  })
+  output$expTable <- renderDataTable({
+    df_coffee
   })
 })
 

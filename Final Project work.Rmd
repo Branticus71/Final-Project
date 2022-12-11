@@ -71,7 +71,7 @@ df_lollipop <- df_coffee %>%
             body = mean(body), 
             balance = mean(balance), uniformity = mean(uniformity), clean_cup = mean(clean_cup), sweetness = mean(sweetness), 
             moisture = mean(moisture))
-
+df_lollipop
 df_lollipop_long <- df_lollipop %>% pivot_longer(-country_of_origin, names_to = "Category", values_to = "average_value")
 df_lollipop_long
 
@@ -91,5 +91,17 @@ df_lollipop_long %>%
 df_coffee %>% 
  filter(country_of_origin == "Brazil") %>%
   describe()
+
+table <- describe(df_coffee)
+cor_plot <- df_coffee %>%
+  correlate()
+cor_plot %>% filter(term == "aroma") %>% select(total_cup_points)
+
+
+
+df_coffee %>% 
+                  select(c(aroma, cupper_points)) %>% 
+                  describe(fast=TRUE) %>%
+                  select(-vars)
 ```
 

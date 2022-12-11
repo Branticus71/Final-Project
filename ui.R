@@ -2,6 +2,7 @@
 library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
+library(DT)
 
 ui <- dashboardPage(skin = "midnight",
                     
@@ -247,7 +248,8 @@ ui <- dashboardPage(skin = "midnight",
                                   selectInput("color","Colors by:",c(None = "NULL", Country = "country_of_origin", Variety = "variety", Process = "processing_method", 
                                                                      color = "color", day = "day", year = "year")),
                                   selectInput("shape","Shapes by:",c(None = "NULL", Process = "processing_method", color = "color")),
-                                  plotOutput("expPlot", heigh = "600px")
+                                  plotOutput("expPlot", heigh = "600px"),
+                                  dataTableOutput("expTable")
                                 ) 
                         ),
                         tabItem(tabName = "model"),
