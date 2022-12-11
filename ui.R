@@ -289,6 +289,7 @@ ui <- dashboardPage(skin = "midnight",
                                   max = 22,
                                   value = 12
                                 ),
+                                actionButton("analysis","Analyze!"),
                                 verbatimTextOutput("reg")
                         )),
                         tabItem(tabName = "pred"),

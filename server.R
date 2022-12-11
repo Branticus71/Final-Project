@@ -363,6 +363,7 @@ shinyServer(function(input, output) {
   })
   #Model Fitting Tab
   #Changing input to a percentage for split
+  observeEvent(input$analysis, {
   train_split <- reactive({
     input$split / 100
   })
@@ -397,6 +398,6 @@ shinyServer(function(input, output) {
           trControl = trctrl)
   })
   output$reg <- renderPrint(summary(model_reg()))
-  
+  })
 })
 
