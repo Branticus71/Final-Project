@@ -23,7 +23,7 @@ vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number"
                          "company", "altitude", "region", "producer", "number_of_bags", "bag_weight", 
                          "in_country_partner", "harvest_year", "owner_1","certification_body", "certification_address",
                          "certification_contact", "unit_of_measurement", "altitude_low_meters", "altitude_high_meters")
-vec_factors = c("species", "country_of_origin","variety", "processing_method", "color", "day")
+vec_factors = c("country_of_origin","variety", "processing_method", "color", "day", "year")
 
 df_coffee <- coffee_ratings %>% 
   #Removing non-predictive variables
@@ -31,21 +31,21 @@ df_coffee <- coffee_ratings %>%
   #Creating a day variable for when coffee graded
   mutate(day = wday(mdy(grading_date), label = TRUE, abbr = FALSE)) %>% 
   mutate(year = year(mdy(grading_date))) %>%
+  filter(species == "Arabica") %>%
   #Removing unneeded variables
-  select(-c("grading_date","expiration")) %>%
+  select(-c("grading_date","expiration", "species")) %>%
   #Changing categorical variables to factors
   mutate(across(vec_factors, factor)) %>%
   #Removing incomplete observations
   drop_na() %>%
   #Removing impossible altitude values
-  filter(altitude_mean_meters < 4200) %>%
-  filter(species == "Arabica") %>%
-  select(-species)
+  filter(altitude_mean_meters < 4200)
 
 
 
 shinyServer(function(input, output) {
   
+  #Variable Information Page
   output$scorePlot <- renderPlot({
     g_score <- ggplot(df_coffee, aes(x = total_cup_points)) +
       geom_histogram()
@@ -307,6 +307,49 @@ shinyServer(function(input, output) {
   output$yearTable <- renderTable({
     tab_year <- table(df_coffee$year)
     tab_year
+  })
+  
+  #Data Exploration Page
+  get_choices <- reactive({
+    df_choices <- list(x = input$x_variable, y = input$y_variable, group = input$group, color = input$color, shape = input$shape)
+    
+  })
+  
+  output$expPlot <- renderPlot({
+    df_plot <- get_choices()
+   # plot_type <- switch(input$plot_type,
+    #                    "scatter" = geom_point(),
+    #                   "boxplot" 	= geom_boxplot(),
+    #                   "histogram" =	geom_histogram(alpha=0.5,position="identity"),
+     #                  "density" 	=	geom_density(alpha=.75),
+     #                  "bar" 		=	geom_bar(position="dodge")
+     #                  )
+    if(input$plot_type == "jitter"){
+      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$y)) +
+               geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape))
+    }
+    if(input$plot_type == "scatter"){
+      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$y)) +
+        geom_point(aes_string(color = df_plot$color, shape = df_plot$shape))
+    }
+    if(input$plot_type == "boxplot"){
+      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$group)) +
+        geom_boxplot() +
+        geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape))
+    }
+    if(input$plot_type == "histogram"){
+      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x)) +
+        geom_histogram(aes_string(color = df_plot$color)) 
+    }
+    if(input$plot_type == "density"){
+      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, fill =df_plot$color, color = df_plot$color)) +
+        geom_density(aes_string( alpha = .1)) 
+    }
+    if(input$plot_type == "bar"){
+      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$group)) +
+        geom_bar(aes_string(color = df_plot$color))
+    }
+    g_exp
   })
 })
 

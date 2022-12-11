@@ -234,7 +234,22 @@ ui <- dashboardPage(skin = "midnight",
                                   tableOutput("yearTable")
                                 )
                         ),
-                        tabItem(tabName = "exp"),
+                        tabItem(tabName = "exp",
+                                fluidRow(
+                                  h1("Data Exploration"),
+                                  h5("Selections only affect relevant plot types. For example, your choice for 'Y Continuous Variable' will not matter if boxplot is chosen for 'Plot Type' and the graph will instead be created based on your 'X Continous Variable' and 'Group By' selection."),
+                                  varSelectInput("x_variable", "X Continuous Variables:", select(df_coffee, where(is.numeric))),
+                                  varSelectInput("y_variable", "Y Continuous Variables:", select(df_coffee, where(is.numeric))),
+                                  selectInput("plot_type","Plot Type:", c(scatter = "scatter", "scatter + jitter" = "jitter", boxplot = "boxplot", histogram = "histogram", 
+                                                                          density = "density", bar = "bar")
+                                  ),
+                                  varSelectInput("group","Group by:",select(df_coffee, where(is.factor))),
+                                  selectInput("color","Colors by:",c(None = "NULL", Country = "country_of_origin", Variety = "variety", Process = "processing_method", 
+                                                                     color = "color", day = "day", year = "year")),
+                                  selectInput("shape","Shapes by:",c(None = "NULL", Process = "processing_method", color = "color")),
+                                  plotOutput("expPlot", heigh = "600px")
+                                ) 
+                        ),
                         tabItem(tabName = "model"),
                         tabItem(tabName = "data")
   

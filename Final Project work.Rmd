@@ -20,7 +20,7 @@ library(kableExtra)
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
 vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number","company", "altitude", "region", "producer", "number_of_bags", "bag_weight", "in_country_partner", "harvest_year", "owner_1","certification_body", "certification_address", "certification_contact", "unit_of_measurement", "altitude_low_meters", "altitude_high_meters")
-vec_factors = c("species", "country_of_origin","variety", "processing_method", "color", "day")
+vec_factors = c("country_of_origin","variety", "processing_method", "color", "day", "year")
 
 df_coffee <- coffee_ratings %>% 
   #Removing non-predictive variables
@@ -28,16 +28,15 @@ df_coffee <- coffee_ratings %>%
   #Creating a day variable for when coffee graded
   mutate(day = wday(mdy(grading_date), label = TRUE, abbr = FALSE)) %>% 
   mutate(year = year(mdy(grading_date))) %>%
+  filter(species == "Arabica") %>%
   #Removing unneeded variables
-  select(-c("grading_date","expiration")) %>%
+  select(-c("grading_date","expiration", "species")) %>%
   #Changing categorical variables to factors
   mutate(across(vec_factors, factor)) %>%
   #Removing incomplete observations
   drop_na() %>%
   #Removing impossible altitude values
-  filter(altitude_mean_meters < 4200) %>%
-  filter(species == "Arabica") %>%
-  select(-species)
+  filter(altitude_mean_meters < 4200)
 
 df_coffee
 table(df_coffee$processing_method)
@@ -59,6 +58,9 @@ tab_variety <- freq(df_coffee$variety, order = "freq", report.nas = FALSE, cumul
     g_uniform <- ggplot(df_coffee, aes(x = uniformity)) +
       geom_histogram() 
     g_uniform
+    
+    ggplot(df_coffee,aes(x = aroma))+
+      geom_bar(aes(color = year))
 ```
 
 
