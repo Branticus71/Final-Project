@@ -261,7 +261,8 @@ ui <- dashboardPage(skin = "midnight",
                                     "preds",
                                     label = "Select variables:",
                                     choices = names(df_coffee),
-                                    multiple = TRUE
+                                    multiple = TRUE,
+                                    selected = c("aroma","flavor", "aftertaste","acidity", "body","balance","uniformity","clean_cup", "sweetness","cupper_points", "moisture")
                                   ),
                                   solidHeader = TRUE,
                                   width = 3,
@@ -285,11 +286,11 @@ ui <- dashboardPage(skin = "midnight",
                                 sliderInput(
                                   "mtry",
                                   label = h3("# of Randomly Selected Predictors for Random Forest"),
-                                  min = 3,
-                                  max = 22,
-                                  value = 12
+                                  min = 1,
+                                  max = 30,
+                                  value = 15
                                 ),
-                                actionButton("analysis","Analyze!"),
+                                submitButton("Update Selections"),
                                 verbatimTextOutput("reg"),
                                 verbatimTextOutput("rand")
                         )),
