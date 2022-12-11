@@ -107,6 +107,13 @@ df_coffee %>%
 outcome <- "total_cup_points"
 pasted<- paste0("df_coffee$", outcome)
 get(pasted)
+df_coffee
 createDataPartition(total_cup_points, p =.7, list = FALSE)
+
+    train(total_cup_points  ~ ., data = df_coffee,
+          preProcess = c("center", "scale"),
+          method = "treebag",
+          mtry = 3,
+          trControl = trctrl)
 ```
 

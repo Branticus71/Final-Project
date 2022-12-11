@@ -269,7 +269,7 @@ ui <- dashboardPage(skin = "midnight",
                                   title = "Predictor Variables"
                                 ),
                                 box(
-                                  selectInput("outcome", label = "Select variable:", choices = names(df_coffee)),
+                                  varSelectInput("outcome", label = "Select variable:", select(df_coffee, where(is.numeric))),
                                   solidHeader = TRUE,
                                   width = 3,
                                   status = "primary",
@@ -290,7 +290,8 @@ ui <- dashboardPage(skin = "midnight",
                                   value = 12
                                 ),
                                 actionButton("analysis","Analyze!"),
-                                verbatimTextOutput("reg")
+                                verbatimTextOutput("reg"),
+                                verbatimTextOutput("rand")
                         )),
                         tabItem(tabName = "pred"),
                         tabItem(tabName = "data")

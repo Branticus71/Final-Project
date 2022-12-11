@@ -397,7 +397,15 @@ shinyServer(function(input, output) {
           method = "lm",
           trControl = trctrl)
   })
+  model_rand <- reactive ({
+    train(reformulate(input$preds, input$outcome), data = trainingData(),
+          preProcess = c("center", "scale"),
+          method = "treebag",
+          mtry = mtry(),
+          trControl = trctrl)
+  })
   output$reg <- renderPrint(summary(model_reg()))
+  output$rand <- renderPrint(varImp(model_rand(), scale = FALSE))
   })
 })
 
