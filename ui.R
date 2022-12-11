@@ -253,6 +253,45 @@ ui <- dashboardPage(skin = "midnight",
                                 ) 
                         ),
                         tabItem(tabName = "model"),
+                        tabItem(tabName = "info"),
+                        tabItem(tabName = "fit",
+                                fluidRow(
+                                box(
+                                  selectInput(
+                                    "preds",
+                                    label = "Select variables:",
+                                    choices = names(df_coffee),
+                                    multiple = TRUE
+                                  ),
+                                  solidHeader = TRUE,
+                                  width = 3,
+                                  status = "primary",
+                                  title = "Predictor Variables"
+                                ),
+                                box(
+                                  selectInput("outcome", label = "Select variable:", choices = names(df_coffee)),
+                                  solidHeader = TRUE,
+                                  width = 3,
+                                  status = "primary",
+                                  title = "Outcome Variable"
+                                ),
+                                sliderInput(
+                                  "split",
+                                  label = h3("Train/Test Split %"),
+                                  min = 50,
+                                  max = 95,
+                                  value = 75
+                                ),
+                                sliderInput(
+                                  "mtry",
+                                  label = h3("# of Randomly Selected Predictors for Random Forest"),
+                                  min = 3,
+                                  max = 22,
+                                  value = 12
+                                ),
+                                verbatimTextOutput("reg")
+                        )),
+                        tabItem(tabName = "pred"),
                         tabItem(tabName = "data")
   
                       )

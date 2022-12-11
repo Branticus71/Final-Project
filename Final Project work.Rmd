@@ -103,5 +103,10 @@ df_coffee %>%
                   select(c(aroma, cupper_points)) %>% 
                   describe(fast=TRUE) %>%
                   select(-vars)
+
+outcome <- "total_cup_points"
+pasted<- paste0("df_coffee$", outcome)
+get(pasted)
+createDataPartition(total_cup_points, p =.7, list = FALSE)
 ```
 

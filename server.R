@@ -17,6 +17,7 @@ library(DescTools)
 library(summarytools)
 library(corrr)
 library(DT)
+library(caret)
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
 vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number",
@@ -359,5 +360,35 @@ shinyServer(function(input, output) {
   output$expTable <- renderDataTable({
     df_coffee
   })
+  #Model Fitting Tab
+  #Changing input to a percentage for split
+  train_split <- reactive({
+    input$split / 100
+  })
+  #Creating the split index
+  set.seed(666)  
+  trainingRowIndex <-
+    reactive({
+      #out_var <- paste0("df_coffee$", input$outcome)
+      #createDataPartition(get(out_var), p = train_split(), list = FALSE)
+      sample(1:nrow(df_coffee),
+            train_split() * nrow(df_coffee))
+    })
+  #Creating Training Dataset
+  trainingData <- reactive({
+    df_coffee[trainingRowIndex(), ]
+  })
+  #Creating Test Dataset
+  testData <- reactive({
+    df_coffee[-trainingRowIndex(), ]
+  })
+  
+  model_var <- reactive({
+    as.formula(paste(input$SelectY, "~", paste(input$preds, collapse = "+")))
+  })
+  model_reg <- reactive ({
+    lm(reformulate(input$preds, input$outcome), data = trainingData())
+  })
+  output$reg <- renderPrint(summary(model_reg()))
 })
 
