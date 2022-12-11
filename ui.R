@@ -3,6 +3,7 @@ library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(DT)
+library(shinycssloaders)
 
 ui <- dashboardPage(skin = "midnight",
                     
@@ -256,6 +257,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "info"),
                         tabItem(tabName = "fit",
                                 fluidRow(
+                                column(width = 6,
                                 box(
                                   selectInput(
                                     "preds",
@@ -276,23 +278,42 @@ ui <- dashboardPage(skin = "midnight",
                                   status = "primary",
                                   title = "Outcome Variable"
                                 ),
-                                sliderInput(
-                                  "split",
-                                  label = h3("Train/Test Split %"),
-                                  min = 50,
-                                  max = 95,
-                                  value = 75
+                                box(
+                                  sliderInput("split", label = h3("Percent of Data for Training:"),min = 50,max = 95,value = 75),
+                                  solidHeader = TRUE,
+                                  width = 3,
+                                  status = "primary",
+                                  title = "Splitting the Data"
                                 ),
-                                sliderInput(
-                                  "mtry",
-                                  label = h3("# of Randomly Selected Predictors for Random Forest"),
-                                  min = 1,
-                                  max = 30,
-                                  value = 15
+                                box(
+                                  sliderInput("mtry",label = h3("Number of Randomly Selected Predictors for Random Forest."),min = 1,max = 15,value = 3),
+                                  solidHeader = TRUE,
+                                  width = 3,
+                                  status = "primary",
+                                  title = "Random Forest Parameter"
                                 ),
-                                submitButton("Update Selections"),
-                                verbatimTextOutput("reg"),
-                                verbatimTextOutput("rand")
+                                box(
+                                  sliderInput("cp",label = h3("Complexity Parameter for Regression Tree."),min = 0,max = .1,value = .005),
+                                  solidHeader = TRUE,
+                                  width = 3,
+                                  status = "primary",
+                                  title = "Regression Tree Parameter"
+                                ),
+                                actionButton("analysis", "Analyze!")
+                                ),
+                                #h3("Summary information for chosen regression model:"),
+                                box(h3("Summary information for chosen regression model:"),
+                                    withSpinner(verbatimTextOutput("reg"))
+                                ),
+                               # h3("Variable Importance for Random Forest Model."),
+                               # h4("Note: If selected number for random predictors is greater than chosen number of predictors then output will not show."),
+                                box( h3("Variable Importance for Random Forest Model."),
+                                     h4("Note: If selected number for random predictors is greater than chosen number of predictors then output will not show."),
+                                     withSpinner(verbatimTextOutput("rand"))
+                                ),
+                                box(h3("Variable Importance for Regression Tree Model."),
+                                    withSpinner(verbatimTextOutput("tree"))
+                                )
                         )),
                         tabItem(tabName = "pred"),
                         tabItem(tabName = "data")

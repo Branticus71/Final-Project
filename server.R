@@ -18,6 +18,7 @@ library(summarytools)
 library(corrr)
 library(DT)
 library(caret)
+library(randomForest)
 trctrl <- trainControl(method = "cv" , number = 10)
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
@@ -36,12 +37,13 @@ df_coffee <- coffee_ratings %>%
   filter(species == "Arabica") %>%
   #Removing unneeded variables
   select(-c("grading_date","expiration", "species")) %>%
-  #Changing categorical variables to factors
-  mutate(across(vec_factors, factor)) %>%
   #Removing incomplete observations
   drop_na() %>%
   #Removing impossible altitude values
-  filter(altitude_mean_meters < 4200)
+  filter(altitude_mean_meters < 4200) %>%
+  #Changing categorical variables to factors
+  mutate(across(vec_factors, factor)) 
+
 
 df_continous_sum <- df_coffee %>%
   group_by(country_of_origin) %>%
@@ -324,13 +326,7 @@ shinyServer(function(input, output) {
   
   output$expPlot <- renderPlot({
     df_plot <- get_choices()
-   # plot_type <- switch(input$plot_type,
-    #                    "scatter" = geom_point(),
-    #                   "boxplot" 	= geom_boxplot(),
-    #                   "histogram" =	geom_histogram(alpha=0.5,position="identity"),
-     #                  "density" 	=	geom_density(alpha=.75),
-     #                  "bar" 		=	geom_bar(position="dodge")
-     #                  )
+  
     if(input$plot_type == "jitter"){
       g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$y)) +
                geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape))
@@ -361,51 +357,62 @@ shinyServer(function(input, output) {
   output$expTable <- renderDataTable({
     df_coffee
   })
-  #Model Fitting Tab
-  #Changing input to a percentage for split
- # observeEvent(input$analysis, {
-  train_split <- reactive({
-    input$split / 100
-  })
-  mtry <- reactive({
-    input$mtry
-  })
-  #Creating the split index
-  set.seed(666)  
-  trainingRowIndex <-
-    reactive({
-      #out_var <- paste0("df_coffee$", input$outcome)
-      #createDataPartition(get(out_var), p = train_split(), list = FALSE)
-      sample(1:nrow(df_coffee),
-            train_split() * nrow(df_coffee))
-    })
-  #Creating Training Dataset
-  trainingData <- reactive({
-    df_coffee[trainingRowIndex(), ]
-  })
-  #Creating Test Dataset
-  testData <- reactive({
-    df_coffee[-trainingRowIndex(), ]
-  })
   
-  model_var <- reactive({
-    as.formula(paste(input$SelectY, "~", paste(input$preds, collapse = "+")))
-  })
+    #Model Fitting Tab
+    #Changing input to a percentage for split
+
+    train_split <- eventReactive(input$analysis,{
+      input$split / 100
+    })
+    select_mtry <- reactive({
+      input$mtry
+    })
+    select_cp <- reactive({
+      input$cp
+    })
+    #Creating the split index
+    set.seed(666)  
+    trainingRowIndex <-
+      eventReactive(input$analysis,{
+        sample(1:nrow(df_coffee),
+              train_split() * nrow(df_coffee))
+      })
+  #Creating Training Dataset
+    trainingData <- eventReactive(input$analysis,{
+      df_coffee[trainingRowIndex(), ]
+    })
+  #Creating Test Dataset
+    testData <- eventReactive(input$analysis,{
+      df_coffee[-trainingRowIndex(), ]
+    })
+  
+    model_var <- eventReactive(input$analysis,{
+      reformulate(input$preds, input$outcome)
+    })
+  
   model_reg <- reactive ({
-    train(reformulate(input$preds, input$outcome), data = trainingData(),
+    train(model_var(), data = trainingData(),
           preProcess = c("center", "scale"),
           method = "lm",
           trControl = trctrl)
   })
   model_rand <- reactive ({
-    train(reformulate(input$preds, input$outcome), data = trainingData(),
+    train(model_var(), data = trainingData(),
           preProcess = c("center", "scale"),
-          method = "treebag",
-          mtry = mtry(),
+          method = "rf",
+          tuneGrid = data.frame(mtry =1:select_mtry()),
+          trControl = trctrl)
+  })
+  model_tree <- reactive ({
+    train(model_var(), data = trainingData(),
+          preProcess = c("center", "scale"),
+          method = "rpart",
+          tuneGrid = data.frame(cp = seq(0, select_cp(), 0.001)),
           trControl = trctrl)
   })
   output$reg <- renderPrint(summary(model_reg()))
   output$rand <- renderPrint(varImp(model_rand(), scale = FALSE))
- # })
+  output$tree <- renderPrint(varImp(model_tree(), scale = FALSE))
+ 
 })
 
