@@ -5,6 +5,31 @@ library(shinydashboardPlus)
 library(DT)
 library(shinycssloaders)
 
+coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
+
+vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number",
+                         "company", "altitude", "region", "producer", "number_of_bags", "bag_weight", 
+                         "in_country_partner", "harvest_year", "owner_1","certification_body", "certification_address",
+                         "certification_contact", "unit_of_measurement", "altitude_low_meters", "altitude_high_meters")
+vec_factors = c("country_of_origin","variety", "processing_method", "color", "day", "year")
+
+df_coffee <- coffee_ratings %>% 
+  #Removing non-predictive variables
+  select(-vec_remove_variables) %>% 
+  #Creating a day variable for when coffee graded
+  mutate(day = wday(mdy(grading_date), label = TRUE, abbr = FALSE)) %>% 
+  mutate(year = year(mdy(grading_date))) %>%
+  filter(species == "Arabica") %>%
+  #Removing unneeded variables
+  select(-c("grading_date","expiration", "species")) %>%
+  #Removing incomplete observations
+  drop_na() %>%
+  #Removing impossible altitude values
+  filter(altitude_mean_meters < 4200) %>%
+  #Changing categorical variables to factors
+  mutate(across(vec_factors, factor)) 
+
+
 ui <- dashboardPage(skin = "midnight",
                     
                     dashboardHeader(title="Final Project: Coffee Score Interactive Dashboard",titleWidth=1000),
@@ -33,7 +58,8 @@ ui <- dashboardPage(skin = "midnight",
                                menuSubItem("Color", tabName = "color"),
                                menuSubItem("Altitude", tabName = "altitude"),
                                menuSubItem("Day", tabName = "day"),
-                               menuSubItem("Year", tabName = "year")
+                               menuSubItem("Year", tabName = "year"),
+                               menuSubItem("Country", tabName = "country")
                                ),
                       menuItem("Data Exploration", tabName = "exp",icon = icon("square-poll-vertical")),
                       menuItem("Modeling", tabName = "model",icon = icon("chalkboard-user"),
@@ -236,6 +262,14 @@ ui <- dashboardPage(skin = "midnight",
                                   tableOutput("yearTable")
                                 )
                         ),
+                        tabItem(tabName = "country",
+                                fluidRow(
+                                h1("Definition"),
+                                p("The country the coffee was grown in."),
+                                plotOutput("countryPlot"),
+                                tableOutput("countryTable")
+                                )
+                        ),
                         tabItem(tabName = "exp",
                                 fluidRow(
                                   h1("Data Exploration"),
@@ -262,7 +296,7 @@ ui <- dashboardPage(skin = "midnight",
                                   selectInput(
                                     "preds",
                                     label = "Select variables:",
-                                    choices = names(df_coffee),
+                                    choices = names(select(df_coffee, -total_cup_points)),
                                     multiple = TRUE,
                                     selected = c("aroma","flavor", "aftertaste","acidity", "body","balance","uniformity","clean_cup", "sweetness","cupper_points", "moisture")
                                   ),
@@ -272,11 +306,12 @@ ui <- dashboardPage(skin = "midnight",
                                   title = "Predictor Variables"
                                 ),
                                 box(
-                                  varSelectInput("outcome", label = "Select variable:", select(df_coffee, where(is.numeric))),
+                                  selectInput("outcome", label = "Select variable:", "total_cup_points"),
                                   solidHeader = TRUE,
                                   width = 3,
                                   status = "primary",
-                                  title = "Outcome Variable"
+                                  title = "Outcome Variable",
+                                  selected = "total_cup_points"
                                 ),
                                 box(
                                   sliderInput("split", label = h3("Percent of Data for Training:"),min = 50,max = 95,value = 75),
@@ -302,20 +337,143 @@ ui <- dashboardPage(skin = "midnight",
                                 actionButton("analysis", "Analyze!")
                                 ),
                                 #h3("Summary information for chosen regression model:"),
-                                box(h3("Summary information for chosen regression model:"),
-                                    withSpinner(verbatimTextOutput("reg"))
+                                box(h3("Summary Information for Chosen Regression Model Parameters:"),
+                                    withSpinner(verbatimTextOutput("reg")),
+                                    h3("RMSE from Test Data"),
+                                    withSpinner(verbatimTextOutput("rmse_reg"))
                                 ),
                                # h3("Variable Importance for Random Forest Model."),
                                # h4("Note: If selected number for random predictors is greater than chosen number of predictors then output will not show."),
-                                box( h3("Variable Importance for Random Forest Model."),
+                                box( h3("Summary Information for Chosen Random Forest Model Parameters:"),
+                                     withSpinner(tableOutput("rand_table")),
+                                     h3("Variable Importance for Random Forest Model."),
                                      h4("Note: If selected number for random predictors is greater than chosen number of predictors then output will not show."),
-                                     withSpinner(verbatimTextOutput("rand"))
+                                     withSpinner(verbatimTextOutput("rand_imp")),
+                                     h3("RMSE from Test Data"),
+                                     withSpinner(verbatimTextOutput("rmse_rand"))
                                 ),
-                                box(h3("Variable Importance for Regression Tree Model."),
-                                    withSpinner(verbatimTextOutput("tree"))
+                                box(h3("Summary Information for Chosen Regression Tree Model Parameters:"),
+                                    withSpinner(tableOutput("tree_table")),
+                                    h3("Variable Importance for Regression Tree Model."),
+                                    withSpinner(verbatimTextOutput("tree_imp")),
+                                    h3("RMSE from Test Data"),
+                                    withSpinner(verbatimTextOutput("rmse_tree"))
                                 )
                         )),
-                        tabItem(tabName = "pred"),
+                        tabItem(tabName = "pred", 
+                                h1("Prediction Using Regression Model"),
+                                h4("Note: The values of continuous variables are limited such that one cannot select values outside of the maximum or minimum value present for that variable in the data. In addition, all continuous variables default to their mean value."),
+                                numericInput("aroma_val",
+                                             "Aroma",
+                                             value = mean(df_coffee$aroma),
+                                             min = min(df_coffee$aroma),
+                                             max= max(df_coffee$aroma),
+                                ),
+                                numericInput("flavor_val",
+                                             "Flavor",
+                                             value = mean(df_coffee$flavor),
+                                             min = min(df_coffee$flavor),
+                                             max= max(df_coffee$flavor),
+                                ),
+                                numericInput("aftertaste_val",
+                                             "Aftertaste",
+                                             value = mean(df_coffee$aftertaste),
+                                             min = min(df_coffee$aftertaste),
+                                             max= max(df_coffee$aftertaste),
+                                ),
+                                numericInput("acidity_val",
+                                             "Acidity",
+                                             value = mean(df_coffee$acidity),
+                                             min = min(df_coffee$acidity),
+                                             max= max(df_coffee$acidity),
+                                ),
+                                numericInput("body_val",
+                                             "Body",
+                                             value = mean(df_coffee$body),
+                                             min = min(df_coffee$body),
+                                             max= max(df_coffee$body),
+                                ),
+                                numericInput("balance_val",
+                                             "Balance",
+                                             value = mean(df_coffee$balance),
+                                             min = min(df_coffee$balance),
+                                             max= max(df_coffee$balance),
+                                ),
+                                numericInput("uniformity_val",
+                                             "Uniformity",
+                                             value = mean(df_coffee$uniformity),
+                                             min = min(df_coffee$uniformity),
+                                             max= max(df_coffee$uniformity),
+                                ),
+                                numericInput("sweetness_val",
+                                             "Sweetness",
+                                             value = mean(df_coffee$sweetness),
+                                             min = min(df_coffee$sweetness),
+                                             max= max(df_coffee$sweetness),
+                                ),
+                                numericInput("clean_val",
+                                             "Clean Cup",
+                                             value = mean(df_coffee$clean_cup),
+                                             min = min(df_coffee$clean_cup),
+                                             max= max(df_coffee$clean_cup),
+                                ),
+                                numericInput("cupper_val",
+                                             "Cupper Points",
+                                             value = mean(df_coffee$cupper_points),
+                                             min = min(df_coffee$cupper_points),
+                                             max= max(df_coffee$cupper_points),
+                                ),
+                                numericInput("moisture_val",
+                                             "Moisture",
+                                             value = mean(df_coffee$moisture),
+                                             min = min(df_coffee$moisture),
+                                             max= max(df_coffee$moisture),
+                                             ste= .01,
+                                ),
+                                numericInput("cat1_val",
+                                             "Category One Defects",
+                                             value = mean(df_coffee$category_one_defects),
+                                             min = min(df_coffee$category_one_defects),
+                                             max= max(df_coffee$category_one_defects),
+                                ),
+                                numericInput("cat2_val",
+                                             "Category Two Defects",
+                                             value = mean(df_coffee$category_two_defects),
+                                             min = min(df_coffee$category_two_defects),
+                                             max= max(df_coffee$category_two_defects),
+                                ),
+                                numericInput("quakers_val",
+                                             "Quakers",
+                                             value = mean(df_coffee$quakers),
+                                             min = min(df_coffee$quakers),
+                                             max= max(df_coffee$quakers),
+                                ),
+                                numericInput("altitude_val",
+                                             "Altitude",
+                                             value = mean(df_coffee$altitude_mean_meters),
+                                             min = min(df_coffee$altitude_mean_meters),
+                                             max= max(df_coffee$altitude_mean_meters),
+                                             step = 250,
+                                ),
+                                selectInput("day_val",
+                                            "Day",
+                                            levels(df_coffee$day)),
+                                selectInput("process_val",
+                                            "Processing Method",
+                                            levels(df_coffee$processing_method)),
+                                selectInput("country_val",
+                                            "Country of Origin",
+                                            levels(df_coffee$country_of_origin)),
+                                selectInput("color_val",
+                                            "Color",
+                                            levels(df_coffee$color)),
+                                selectInput("year_val",
+                                            "Year",
+                                            levels(df_coffee$year)),
+                                selectInput("variety_val",
+                                            "Variety",
+                                            levels(df_coffee$variety))
+                        ),
                         tabItem(tabName = "data")
   
                       )

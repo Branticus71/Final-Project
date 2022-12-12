@@ -318,6 +318,16 @@ shinyServer(function(input, output) {
     tab_year
   })
   
+  output$countryPlot <- renderPlot({
+    g_country <- ggplot(df_coffee, aes(x = country_of_origin)) +
+      geom_bar() 
+    g_country
+  })
+  
+  output$countryTable <- renderTable({
+    tab_country <- table(df_coffee$country_of_origin)
+    tab_country
+  })
   #Data Exploration Page
   get_choices <- reactive({
     df_choices <- list(x = input$x_variable, y = input$y_variable, group = input$group, color = input$color, shape = input$shape)
@@ -364,10 +374,10 @@ shinyServer(function(input, output) {
     train_split <- eventReactive(input$analysis,{
       input$split / 100
     })
-    select_mtry <- reactive({
+    select_mtry <- eventReactive(input$analysis,{
       input$mtry
     })
-    select_cp <- reactive({
+    select_cp <- eventReactive(input$analysis,{
       input$cp
     })
     #Creating the split index
@@ -411,8 +421,23 @@ shinyServer(function(input, output) {
           trControl = trctrl)
   })
   output$reg <- renderPrint(summary(model_reg()))
-  output$rand <- renderPrint(varImp(model_rand(), scale = FALSE))
-  output$tree <- renderPrint(varImp(model_tree(), scale = FALSE))
- 
+  output$rand_table <- renderTable(model_rand()$results, digits = 3)
+  output$tree_table <- renderTable(model_tree()$results, digits = 3)
+  output$rand_imp <- renderPrint(varImp(model_rand(), scale = FALSE))
+  output$tree_imp <- renderPrint(varImp(model_tree(), scale = FALSE))
+
+  reg_pred <- reactive ({
+    predict(model_reg(), newdata = testData())
+  })
+  rand_pred <- reactive ({
+    predict(model_rand(), newdata = testData())
+  })
+  tree_pred <- reactive ({
+    predict(model_tree(), newdata = testData())
+  })
+  #Results on test data
+  output$rmse_reg <- renderPrint(postResample(reg_pred(), testData()$total_cup_points))
+  output$rmse_rand <- renderPrint(postResample(rand_pred(), testData()$total_cup_points))
+  output$rmse_tree <- renderPrint(postResample(tree_pred(), testData()$total_cup_points))
 })
 
