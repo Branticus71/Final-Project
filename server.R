@@ -439,5 +439,21 @@ shinyServer(function(input, output) {
   output$rmse_reg <- renderPrint(postResample(reg_pred(), testData()$total_cup_points))
   output$rmse_rand <- renderPrint(postResample(rand_pred(), testData()$total_cup_points))
   output$rmse_tree <- renderPrint(postResample(tree_pred(), testData()$total_cup_points))
+  
+  reg_test <- train(total_cup_points ~ ., data = df_coffee,
+                    preProcess = c("center", "scale"),
+                    method = "lm",
+                    trControl = trctrl)
+  #Prediction Page
+  result_pred <- eventReactive(input$start, {
+    inputData <- data.frame(aroma = input$aroma_val, flavor = input$flavor_val, aftertaste = input$aftertaste_val, acidity = input$acidity_val, body = input$body_val,
+                          balance = input$balance_val, uniformity = input$uniformity_val, sweetness = input$sweetness_val, clean_cup = input$clean_val, 
+                          cupper_points = input$cupper_val, moisture = input$moisture_val, category_one_defects = input$cat1_val, category_two_defects = input$cat2_val,
+                          quakers = input$quakers_val, altitude_mean_meters = input$altitude_val, day = input$day_val, processing_method = input$process_val,
+                          country_of_origin = input$country_val, color = input$color_val, year = input$year_val, variety = input$variety_val )
+    input_pred <- predict(model_reg(), newdata = inputData)
+    input_pred_round <- round(input_pred, 3)
+    paste0(input_pred_round)
+  })
+  output$predicted <- renderPrint(result_pred())
 })
-

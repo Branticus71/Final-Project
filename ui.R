@@ -361,7 +361,7 @@ ui <- dashboardPage(skin = "midnight",
                                 )
                         )),
                         tabItem(tabName = "pred", 
-                                h1("Prediction Using Regression Model"),
+                                h1("Prediction Using Regression Model Created from Model Fitting Page"),
                                 h4("Note: The values of continuous variables are limited such that one cannot select values outside of the maximum or minimum value present for that variable in the data. In addition, all continuous variables default to their mean value."),
                                 numericInput("aroma_val",
                                              "Aroma",
@@ -472,7 +472,19 @@ ui <- dashboardPage(skin = "midnight",
                                             levels(df_coffee$year)),
                                 selectInput("variety_val",
                                             "Variety",
-                                            levels(df_coffee$variety))
+                                            levels(df_coffee$variety)),
+                                
+                                actionButton("start", "Predict!"),
+                                fluidRow(
+                                  box(
+                                    h1("Your Predicted Value for Total Cup Points:"),
+                                    h4(verbatimTextOutput("predicted", placeholder = T))
+                                  ),
+                                
+                                  
+                                  
+                                ),
+                                
                         ),
                         tabItem(tabName = "data")
   
