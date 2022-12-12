@@ -347,7 +347,51 @@ ui <- dashboardPage(skin = "blue-light",
                                 ) 
                         ),
                         tabItem(tabName = "model"),
-                        tabItem(tabName = "info"),
+                        tabItem(tabName = "info",
+                                fluidRow(
+                                  h1("Model Information"),
+                                  column(width = 12,
+                                          box(
+                                              h1("Linear Regression works by taking in a single outcome variable and multiple predictor variables. It them minimizes the sum of squared residuals: \\(\\sum\\) ( \\(\\epsilon^{2}\\))"),
+                                              h1("To calculate the \\(\\beta\\) for each predictor variable. The prediction is then found by multiplying each predictor variable's value by its \\(\\beta\\) and adding them together along with the intercept."),
+                                              h1("Regressions are helpful because it is very easy to interpret the results of a regression by looking at your coefficients and their statistical significance. Unfortunately, this interpretability can suffer when dealing with generalized linear models and the statistical assumptions necessary to achieve unbiased coefficients can be rather strict."),
+                                              solidHeader = TRUE,
+                                              width = 4,
+                                              status = "primary",
+                                              title = "Linear Regression" 
+                                          ),
+                                         box(
+                                             h1("Regression Trees take in predictors then find the optimal values to split at minimizing the Residual Sum of Squares: \\(\\sum\\)(\\(\\epsilon^{2}\\)) for the observed values on each side of the split. This continues on for a long time creating a very large tree with a predicted value for our outcome variable at the very end of all the splits."),
+                                             h1("Trees are often desirable in that they are easy to understand, have no statistical assumptions that must be met, and account for variable interaction innately. Some downsides are that normally you need to prune the tree to reduce the number of splits and there is not an optimal algorithm to form the tree like there is for a regression."),
+                                             solidHeader = TRUE,
+                                             width = 4,
+                                             status = "primary",
+                                             title = "Regression Tree"
+                                         ),
+                                         box(
+                                             h1("The Random Forest is a special case of a Bagged Tree. A Bagged Tree is like a Regression Tree but it is built upon taking bootstrap samples with replacement from your data then forming trees based on those samples then aggregating them to find the best model. Random Forests take this just a bit farther by randomly sampling the predictors to use in the model construction."),
+                                             h1("This leads to trees that are less correlated with each other that are then aggregated to get a final model which often has better predictive power. The major downside is that while you retain measures like variable importance you do lose interpretability."),
+                                             solidHeader = TRUE,
+                                             width = 4,
+                                             status = "primary",
+                                             title = "Random Forest"
+                                         )
+
+
+
+
+
+
+                                         )
+
+
+
+
+
+
+
+                                )
+                        ),
                         tabItem(tabName = "fit",
                                 fluidRow(
                                 column(width = 12,
