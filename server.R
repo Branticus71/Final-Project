@@ -52,10 +52,11 @@ df_continous_sum <- df_coffee %>%
 
 shinyServer(function(input, output) {
   
-  #Variable Information Page
+  #Variable Information Pages
+  #Histograms/Bar charts and summary statistics/frequency tables for each variable
   output$scorePlot <- renderPlot({
     g_score <- ggplot(df_coffee, aes(x = total_cup_points)) +
-      geom_histogram()
+      geom_histogram(fill = "steelblue")
     g_score
   })
   output$scoreTable <- renderTable({
@@ -63,10 +64,9 @@ shinyServer(function(input, output) {
                 select(-vars)
     
   })
-  
   output$varietyPlot <- renderPlot({
     g_variety <- ggplot(df_coffee, aes(x = variety)) +
-      geom_bar() +
+      geom_bar(fill = "steelblue") +
       theme(axis.text.x = element_text(angle = 45))
     g_variety
   })
@@ -74,336 +74,302 @@ shinyServer(function(input, output) {
     tab_variety <- table(df_coffee$variety)
     tab_variety
   })
-  
   output$procPlot <- renderPlot({
     g_proc <- ggplot(df_coffee, aes(x = processing_method)) +
-      geom_bar() +
+      geom_bar(fill = "steelblue") +
       theme(axis.text.x = element_text(angle = 45))
     g_proc
   })
-  
   output$procTable <- renderTable({
     tab_proc <- table(df_coffee$processing_method)
     tab_proc
   })
-  
   output$aromaPlot <- renderPlot({
     g_aroma <- ggplot(df_coffee, aes(x = aroma)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_aroma
   })
-  
   output$aromaTable <- renderTable({
     tab_aroma <- describe(df_coffee$aroma, fast = TRUE) %>%
       select(-vars)
     tab_aroma
   })
-  
   output$flavorPlot <- renderPlot({
     g_flavor <- ggplot(df_coffee, aes(x = flavor)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_flavor
   })
-  
   output$flavorTable <- renderTable({
     tab_flavor <- describe(df_coffee$flavor, fast = TRUE) %>%
       select(-vars)
     tab_flavor
   })
-  
   output$tastePlot <- renderPlot({
     g_taste <- ggplot(df_coffee, aes(x = aftertaste)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_taste
   })
-  
   output$tasteTable <- renderTable({
     tab_taste <- describe(df_coffee$aftertaste, fast = TRUE) %>%
       select(-vars)
     tab_taste
   })
-  
   output$acidPlot <- renderPlot({
     g_acid <- ggplot(df_coffee, aes(x = acidity)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_acid
   })
-  
   output$acidTable <- renderTable({
     tab_acid <- describe(df_coffee$acidity, fast = TRUE) %>%
       select(-vars)
     tab_acid
   })
-  
   output$bodyPlot <- renderPlot({
     g_body <- ggplot(df_coffee, aes(x = body)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_body
   })
-  
   output$bodyTable <- renderTable({
     tab_body <- describe(df_coffee$body, fast = TRUE) %>%
       select(-vars)
     tab_body
   })
-  
   output$balancePlot <- renderPlot({
     g_balance <- ggplot(df_coffee, aes(x = balance)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_balance
   })
-  
   output$balanceTable <- renderTable({
     tab_balance <- describe(df_coffee$balance, fast = TRUE) %>%
       select(-vars)
     tab_balance
   })
-  
-  
   output$uniformPlot <- renderPlot({
     g_uniform <- ggplot(df_coffee, aes(x = uniformity)) +
-      geom_histogram(bins=30) 
+      geom_histogram(fill = "steelblue") 
     g_uniform
   })
-  
   output$uniformTable <- renderTable({
     tab_uniform <- describe(df_coffee$uniformity, fast = TRUE) %>%
       select(-vars)
     tab_uniform
   })
-  
   output$sweetPlot <- renderPlot({
     g_sweet <- ggplot(df_coffee, aes(x = sweetness)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_sweet
   })
-  
   output$sweetTable <- renderTable({
     tab_sweet <- describe(df_coffee$sweetness, fast = TRUE) %>%
       select(-vars)
     tab_sweet
   })
-  
   output$cleanPlot <- renderPlot({
     g_clean <- ggplot(df_coffee, aes(x = clean_cup)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_clean
   })
-  
   output$cleanTable <- renderTable({
     tab_clean <- describe(df_coffee$clean_cup, fast = TRUE) %>%
       select(-vars)
     tab_clean
   })
-  
   output$cleanPlot <- renderPlot({
     g_clean <- ggplot(df_coffee, aes(x = clean_cup)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_clean
   })
-  
   output$cleanTable <- renderTable({
     tab_clean <- describe(df_coffee$clean_cup, fast = TRUE) %>%
       select(-vars)
     tab_clean
   })
-  
   output$pointsPlot <- renderPlot({
     g_points <- ggplot(df_coffee, aes(x = cupper_points)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_points
   })
-  
   output$pointsTable <- renderTable({
     tab_points <- describe(df_coffee$cupper_points, fast = TRUE) %>%
       select(-vars)
     tab_points
   })
-  
   output$moistPlot <- renderPlot({
     g_moist <- ggplot(df_coffee, aes(x = moisture)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_moist
   })
-  
   output$moistTable <- renderTable({
     tab_moist <- describe(df_coffee$moisture, fast = TRUE) %>%
       select(-vars)
     tab_moist
   })
-  
   output$cat1Plot <- renderPlot({
     g_cat1 <- ggplot(df_coffee, aes(x = category_one_defects)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_cat1
   })
-  
   output$cat1Table <- renderTable({
     tab_cat1 <- describe(df_coffee$category_one_defects, fast = TRUE) %>%
       select(-vars)
     tab_cat1
   })
-  
-  
   output$cat2Plot <- renderPlot({
     g_cat2 <- ggplot(df_coffee, aes(x = category_two_defects)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_cat2
   })
-  
   output$cat2Table <- renderTable({
     tab_cat2 <- describe(df_coffee$category_two_defects, fast = TRUE) %>%
       select(-vars)
     tab_cat2
   })
-  
-  
   output$quakersPlot <- renderPlot({
     g_quakers <- ggplot(df_coffee, aes(x = quakers)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_quakers
   })
-  
   output$quakersTable <- renderTable({
     tab_quakers <- describe(df_coffee$quakers, fast = TRUE) %>%
       select(-vars)
     tab_quakers
   })
-  
-  
   output$colorPlot <- renderPlot({
     g_color <- ggplot(df_coffee, aes(x = color)) +
-      geom_bar() 
+      geom_bar(fill = "steelblue") 
     g_color
   })
-  
   output$colorTable <- renderTable({
     tab_color <- table(df_coffee$color)
     tab_color
   })
-  
   output$altitudePlot <- renderPlot({
     g_altitude <- ggplot(df_coffee, aes(x = altitude_mean_meters)) +
-      geom_histogram() 
+      geom_histogram(fill = "steelblue") 
     g_altitude
   })
-  
   output$altitudeTable <- renderTable({
     tab_altitude <- describe(df_coffee$altitude_mean_meters, fast = TRUE) %>%
       select(-vars)
     tab_altitude
   })
-  
   output$dayPlot <- renderPlot({
     g_color <- ggplot(df_coffee, aes(x = day)) +
-      geom_bar() 
+      geom_bar(fill = "steelblue") 
     g_color
   })
-  
   output$dayTable <- renderTable({
     tab_day <- table(df_coffee$day)
     tab_day
   })
-  
   output$yearPlot <- renderPlot({
     g_year <- ggplot(df_coffee, aes(x = year)) +
-      geom_bar() 
+      geom_bar(fill = "steelblue") 
     g_year
   })
-  
   output$yearTable <- renderTable({
     tab_year <- table(df_coffee$year)
     tab_year
   })
-  
   output$countryPlot <- renderPlot({
     g_country <- ggplot(df_coffee, aes(x = country_of_origin)) +
-      geom_bar() 
+      geom_bar(fill = "steelblue") 
     g_country
   })
-  
   output$countryTable <- renderTable({
     tab_country <- table(df_coffee$country_of_origin)
     tab_country
   })
+  
   #Data Exploration Page
+  #Collecting choices from input
   get_choices <- reactive({
     df_choices <- list(x = input$x_variable, y = input$y_variable, group = input$group, color = input$color, shape = input$shape, size = input$size)
     
   })
-  
+  #Filtering data based on user choices
+  exp_data <- reactive({
+    df_coffee %>%
+      filter(country_of_origin %in% input$country_exp) %>%
+      filter(processing_method %in% input$process_exp) %>%
+      filter(color %in% input$color_exp) %>%
+      filter(variety %in% input$variety_exp) %>%
+      filter(day %in% input$day_exp) %>%
+      filter(year %in% input$year_exp)
+  })
+  #Creating Plot based upon choices
   output$expPlot <- renderPlot({
     df_plot <- get_choices()
-  
     if(input$plot_type == "jitter"){
-      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$y)) +
+      g_exp <- ggplot(exp_data(), aes_string(x = df_plot$x, y = df_plot$y)) +
                geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape ), size = df_plot$size)
     }
     if(input$plot_type == "scatter"){
-      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$y)) +
+      g_exp <- ggplot(exp_data(), aes_string(x = df_plot$x, y = df_plot$y)) +
         geom_point(aes_string(color = df_plot$color, shape = df_plot$shape), size = df_plot$size)
     }
     if(input$plot_type == "boxplot"){
-      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$group)) +
-        geom_boxplot(fill= "grey") +
+      g_exp <- ggplot(exp_data(), aes_string(x = df_plot$x, y = df_plot$group)) +
+        geom_boxplot(fill = "steelblue") +
         geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape), size = df_plot$size)
     }
     if(input$plot_type == "histogram"){
-      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x)) +
-        geom_histogram(aes_string(color = df_plot$color)) 
+      g_exp <- ggplot(exp_data(), aes_string(x = df_plot$x)) +
+        geom_histogram(fill = "steelblue",aes_string(color = df_plot$color)) 
     }
     if(input$plot_type == "density"){
-      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, fill =df_plot$color, color = df_plot$color)) +
+      g_exp <- ggplot(exp_data(), aes_string(x = df_plot$x, fill =df_plot$color, color = df_plot$color)) +
         geom_density(aes_string( alpha = .1)) 
     }
     if(input$plot_type == "bar"){
-      g_exp <- ggplot(df_coffee, aes_string(x = df_plot$group)) +
-        geom_bar(aes_string(color = df_plot$color))
+      g_exp <- ggplot(exp_data(), aes_string(x = df_plot$group)) +
+        geom_bar(fill = "steelblue",aes_string(color = df_plot$color))
     }
     g_exp
   })
+  #Table of data
   output$expTable <- renderDataTable({
-    df_coffee
+    exp_data()
   })
-  
-    #Model Fitting Tab
-    #Changing input to a percentage for split
+  #Model Fitting Tab
+  #Changing input to a percentage for split
 
-    train_split <- eventReactive(input$analysis,{
-      input$split / 100
+  train_split <- eventReactive(input$analysis,{
+    input$split / 100
+  })
+  select_mtry <- eventReactive(input$analysis,{
+    input$mtry
+  })
+  select_cp <- eventReactive(input$analysis,{
+    input$cp
+  })
+  #Creating the split index
+  set.seed(666)  
+  trainingRowIndex <-
+    eventReactive(input$analysis,{
+      sample(1:nrow(df_coffee),
+            train_split() * nrow(df_coffee))
     })
-    select_mtry <- eventReactive(input$analysis,{
-      input$mtry
-    })
-    select_cp <- eventReactive(input$analysis,{
-      input$cp
-    })
-    #Creating the split index
-    set.seed(666)  
-    trainingRowIndex <-
-      eventReactive(input$analysis,{
-        sample(1:nrow(df_coffee),
-              train_split() * nrow(df_coffee))
-      })
   #Creating Training Dataset
-    trainingData <- eventReactive(input$analysis,{
-      df_coffee[trainingRowIndex(), ]
-    })
+  trainingData <- eventReactive(input$analysis,{
+    df_coffee[trainingRowIndex(), ]
+  })
   #Creating Test Dataset
-    testData <- eventReactive(input$analysis,{
-      df_coffee[-trainingRowIndex(), ]
-    })
-  
-    model_var <- eventReactive(input$analysis,{
-      reformulate(input$preds, input$outcome)
-    })
-  
+  testData <- eventReactive(input$analysis,{
+    df_coffee[-trainingRowIndex(), ]
+  })
+  #Formula for prediction
+  model_var <- eventReactive(input$analysis,{
+    reformulate(input$preds, input$outcome)
+  })
+  #Linear Regression
   model_reg <- reactive ({
     train(model_var(), data = trainingData(),
           preProcess = c("center", "scale"),
           method = "lm",
           trControl = trctrl)
   })
+  #Random Forest
   model_rand <- reactive ({
     train(model_var(), data = trainingData(),
           preProcess = c("center", "scale"),
@@ -411,6 +377,7 @@ shinyServer(function(input, output) {
           tuneGrid = data.frame(mtry =1:select_mtry()),
           trControl = trctrl)
   })
+  #Regression Tree
   model_tree <- reactive ({
     train(model_var(), data = trainingData(),
           preProcess = c("center", "scale"),
@@ -418,12 +385,13 @@ shinyServer(function(input, output) {
           tuneGrid = data.frame(cp = seq(0, select_cp(), 0.001)),
           trControl = trctrl)
   })
+  #Model Info
   output$reg <- renderPrint(summary(model_reg()))
   output$rand_table <- renderTable(model_rand()$results, digits = 3)
   output$tree_table <- renderTable(model_tree()$results, digits = 3)
   output$rand_imp <- renderPrint(varImp(model_rand(), scale = FALSE))
   output$tree_imp <- renderPrint(varImp(model_tree(), scale = FALSE))
-
+  #Predictions
   reg_pred <- reactive ({
     predict(model_reg(), newdata = testData())
   })
@@ -439,6 +407,7 @@ shinyServer(function(input, output) {
   output$rmse_tree <- renderPrint(postResample(tree_pred(), testData()$total_cup_points))
   
   #Prediction Page
+  #Taking in choices and finding prediction
   result_pred <- eventReactive(input$start, {
     inputData <- data.frame(aroma = input$aroma_val, flavor = input$flavor_val, aftertaste = input$aftertaste_val, acidity = input$acidity_val, body = input$body_val,
                           balance = input$balance_val, uniformity = input$uniformity_val, sweetness = input$sweetness_val, clean_cup = input$clean_val, 
@@ -453,6 +422,7 @@ shinyServer(function(input, output) {
   
   
   #Data Page
+  #Filtering data based on user choices
   user_data <- reactive({
     df_coffee %>%
       select(c(input$selects, vec_factors)) %>%
@@ -463,10 +433,11 @@ shinyServer(function(input, output) {
       filter(day %in% input$filter_day) %>%
       filter(year %in% input$filter_year)
   })
-  
+  #Table of user selected data
   output$data_table <- renderDataTable({
     user_data() 
   })
+  #Download code
   output$download1 <- downloadHandler(
     filename = function() {
       paste("coffee_", Sys.Date(), ".csv", sep="")
