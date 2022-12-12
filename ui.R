@@ -6,15 +6,16 @@ library(DT)
 library(shinycssloaders)
 library(tidyverse)
 library(lubridate)
-
+#Reading in data
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
-
+#Variables to remove
 vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number",
                          "company", "altitude", "region", "producer", "number_of_bags", "bag_weight", 
                          "in_country_partner", "harvest_year", "owner_1","certification_body", "certification_address",
                          "certification_contact", "unit_of_measurement", "altitude_low_meters", "altitude_high_meters")
+#Variables that are factors
 vec_factors = c("country_of_origin","variety", "processing_method", "color", "day", "year")
-
+#Cleaning data
 df_coffee <- coffee_ratings %>% 
   #Removing non-predictive variables
   select(-vec_remove_variables) %>% 
@@ -75,27 +76,29 @@ ui <- dashboardPage(skin = "blue-light",
                     #define the body of the app
                     dashboardBody(
                       tabItems(
-                        # First tab content
+                        #About tab
                         tabItem(tabName = "about",
                                 fluidRow(
                                   #add in latex functionality if needed
                                   withMathJax(),
                                   h1("Purpose"),
-                                  p("This app allows a user to interact with a coffee ratings dataset for arabica coffee beans provided by Tidy Tuesdays to explore the data, create models, create predictions, and download the data. The dataset can be found by clicking here."),
+                                  HTML("<h4>This app allows a user to interact with a coffee ratings dataset for arabica coffee beans provided by Tidy Tuesdays to explore the data, create models, create predictions, and download the data. The dataset can be found by clicking <a href='https://github.com/rfordatascience/tidytuesday/blob/f5412c3ac5281c056f2525ee772a10769012bba9/data/2020/2020-07-07/coffee_ratings.csv'>here</a>.</h4>"),
                                   h1("Pages"),
                                   h3("Variable Information"),
-                                  p("This page contains a tab for each variable in the dataset. In each tab, the user can find a definition of the variable along with summary statistics."),
+                                  h4("This page contains a tab for each variable in the dataset. In each tab, the user can find a definition of the variable along with summary statistics."),
                                   h3("Data Exploration"),
-                                  p("This page allows the user to select an x and y variable along with plot type then creates a graph based upon their choices. There are also options to add colors and shapes based upon categorical variables"),
+                                  h4("This page allows the user to select an x and y variable along with plot type then creates a graph based upon their choices. There are also options to add colors and shapes based upon categorical variables and the ability to filter the data by the values of each categorical variable."),
                                   h3("Modeling"),
-                                  p("This page holds three tabs: Modeling Info, Model Fitting, and Prediction."),
-                                  p("In the first tab, the user will be given a description of each of the three models they can create along with pros and cons of each."),
-                                  p("In the second tab, the user will be able to create models by specifying the proportion of data to be used as the training set, the variables to use as predictors, and model settings. After creation, the user will be supplied with fit statistics and summaries for each model to gauge performance."),
-                                  p("In the final tab, the user will be able to input values in for each of the predictors and return a predicted score."),
+                                  h4("This page holds three tabs: Modeling Info, Model Fitting, and Prediction."),
+                                  h4("In the first tab, the user will be given a description of each of the three models they can create along with pros and cons of each."),
+                                  h4("In the second tab, the user will be able to create models by specifying the proportion of data to be used as the training set, the variables to use as predictors, and model settings. After creation, the user will be supplied with fit statistics and summaries for each model to gauge performance."),
+                                  h4("In the final tab, the user will be able to input values in for each of the predictors and return a predicted value for total cup points."),
                                   h3("Data"),
-                                  p("Finally, the Data page will allow the user to create a subset of the data then download the result as a .csv file.")
+                                  h4("The Data page will allow the user to view and create a subset of the data then download the result as a .csv file."),
+                                  htmlOutput("picture")
                                 )
-                        ),
+                        ), 
+                        #Variable Information Page sub tabs.
                         tabItem(tabName = "score",
                                 fluidRow(
                                   h1("Definition"),
@@ -272,6 +275,7 @@ ui <- dashboardPage(skin = "blue-light",
                                 tableOutput("countryTable")
                                 )
                         ),
+                        #Data Exploration Page
                         tabItem(tabName = "exp",
                                 fluidRow(
                                   h1("Data Exploration"),
@@ -282,6 +286,7 @@ ui <- dashboardPage(skin = "blue-light",
                                     status = "primary",
                                     title = "About"
                                   )),
+                                  #Graphing selections box
                                   column(width = 4,
                                     box( width = 12,
                                       varSelectInput("x_variable", "X Continuous Variables:", select(df_coffee, where(is.numeric))),
@@ -297,6 +302,7 @@ ui <- dashboardPage(skin = "blue-light",
                                       status = "primary",
                                       title = "Graphing Selections"
                                     )),
+                                  #Filtering box
                                   column(width = 4,
                                          box( width = 12,
                                            selectInput("day_exp",
@@ -335,7 +341,7 @@ ui <- dashboardPage(skin = "blue-light",
                                          )
                                          
                                          ),
-                                 # selectInput(),
+                                 #Graph output
                                   column(width = 12,
                                     box(width = 12,
                                       plotOutput("expPlot", heigh = "600px"),
@@ -343,11 +349,13 @@ ui <- dashboardPage(skin = "blue-light",
                                       status = "primary",
                                       title = "Plot"
                                   )),
+                                 #Data table
                                   dataTableOutput("expTable")
                                 ) 
                         ),
                         tabItem(tabName = "model"),
                         tabItem(tabName = "info",
+                                #Model Information tab
                                 fluidRow(
                                   h1("Model Information"),
                                   column(width = 12,
@@ -375,27 +383,13 @@ ui <- dashboardPage(skin = "blue-light",
                                              width = 4,
                                              status = "primary",
                                              title = "Random Forest"
-                                         )
-
-
-
-
-
-
-                                         )
-
-
-
-
-
-
-
-                                )
+                                         )))
                         ),
                         tabItem(tabName = "fit",
                                 fluidRow(
                                 column(width = 12,
                                 box(
+                                  #predictor selection box
                                   selectInput(
                                     "preds",
                                     label = "Select variables:",
@@ -409,6 +403,7 @@ ui <- dashboardPage(skin = "blue-light",
                                   title = "Predictor Variables"
                                 ),
                                 box(
+                                  #outcome variable box, fixed to just total_cup_points
                                   selectInput("outcome", label = "Select variable:", "total_cup_points"),
                                   solidHeader = TRUE,
                                   width = 2,
@@ -417,6 +412,7 @@ ui <- dashboardPage(skin = "blue-light",
                                   selected = "total_cup_points"
                                 ),
                                 box(
+                                  #data set splitting slider
                                   sliderInput("split", label = h3("Percent of Data for Training:"),min = 50,max = 95,value = 75),
                                   solidHeader = TRUE,
                                   width = 2,
@@ -424,6 +420,7 @@ ui <- dashboardPage(skin = "blue-light",
                                   title = "Splitting the Data"
                                 ),
                                 box(
+                                  #Random forest parameters
                                   sliderInput("mtry",label = h3("Number of Randomly Selected Predictors for Random Forest."),min = 1,max = 15,value = 3),
                                   solidHeader = TRUE,
                                   width = 2,
@@ -431,45 +428,52 @@ ui <- dashboardPage(skin = "blue-light",
                                   title = "Random Forest Parameter"
                                 ),
                                 box(
+                                  #regression tree parameters
                                   sliderInput("cp",label = h3("Complexity Parameter for Regression Tree."),min = 0,max = .1,value = .005),
                                   solidHeader = TRUE,
                                   width = 2,
                                   status = "primary",
                                   title = "Regression Tree Parameter"
                                 ),
-                                actionButton("analysis", "Analyze!")
+                                actionButton("analysis", "Build Models")
                                 ),
-                                box(width = 6,
-                                    h3("Summary Information"),
-                                    withSpinner(verbatimTextOutput("reg")),
-                                    h3("RMSE from Predicting on the Test Data"),
-                                    withSpinner(verbatimTextOutput("rmse_reg")),
-                                    title = "Linear Regression",
-                                    solidHeader = TRUE,
-                                    status = "primary"
+                                box(
+                                  #Regression Results
+                                  width = 6,
+                                  h3("Summary Information"),
+                                  withSpinner(verbatimTextOutput("reg")),
+                                  h3("RMSE from Predicting on the Test Data"),
+                                  withSpinner(verbatimTextOutput("rmse_reg")),
+                                  title = "Linear Regression",
+                                  solidHeader = TRUE,
+                                  status = "primary"
                                 ),
-                                box(width = 6,
-                                     h3("Summary Information"),
-                                     withSpinner(tableOutput("rand_table")),
-                                     h3("Variable Importance"),
-                                     h4("Note: If selected number for random predictors is greater than chosen number of predictors then output will not show."),
-                                     withSpinner(verbatimTextOutput("rand_imp")),
-                                     h3("RMSE from Predicting on the Test Data"),
-                                     withSpinner(verbatimTextOutput("rmse_rand")),
-                                     title = "Random Forest",
-                                     solidHeader = TRUE,
-                                     status = "primary"
+                                box(
+                                  #Random Forest Results
+                                  width = 6,
+                                  h3("Summary Information"),
+                                  withSpinner(tableOutput("rand_table")),
+                                  h3("Variable Importance"),
+                                  h4("Note: If selected number for random predictors is greater than chosen number of predictors then output will not show."),
+                                  withSpinner(verbatimTextOutput("rand_imp")),
+                                  h3("RMSE from Predicting on the Test Data"),
+                                  withSpinner(verbatimTextOutput("rmse_rand")),
+                                  title = "Random Forest",
+                                  solidHeader = TRUE,
+                                  status = "primary"
                                 ),
-                                box(width = 6,
-                                    h3("Summary Information"),
-                                    withSpinner(tableOutput("tree_table")),
-                                    h3("Variable Importance"),
-                                    withSpinner(verbatimTextOutput("tree_imp")),
-                                    h3("RMSE from Predicting on the Test Data"),
-                                    withSpinner(verbatimTextOutput("rmse_tree")),
-                                    title = "Regression Tree",
-                                    solidHeader = TRUE,
-                                    status = "primary"
+                                box(
+                                  #Regression Tree Results
+                                  width= 6,
+                                  h3("Summary Information"),
+                                  withSpinner(tableOutput("tree_table")),
+                                  h3("Variable Importance"),
+                                  withSpinner(verbatimTextOutput("tree_imp")),
+                                  h3("RMSE from Predicting on the Test Data"),
+                                  withSpinner(verbatimTextOutput("rmse_tree")),
+                                  title = "Regression Tree",
+                                  solidHeader = TRUE,
+                                  status = "primary"
                                     
                                 )
                         )),
@@ -477,7 +481,9 @@ ui <- dashboardPage(skin = "blue-light",
                                 h1("Prediction Using Regression Model Created from Model Fitting Page"),
                                 h4("Note: The values of continuous variables are limited such that one cannot select values outside of the maximum or minimum value present for that variable in the data. In addition, all continuous variables default to their mean value. If you did not include a predictor in your previous model then changing it's value will not affect your predicted value."),
                                 column(width = 3,
-                                  box(width = 12,
+                                  box(
+                                    #Value Selection Box
+                                    width = 12,
                                     numericInput("aroma_val",
                                                 "Aroma",
                                                 value = round(mean(df_coffee$aroma),2),
@@ -579,7 +585,9 @@ ui <- dashboardPage(skin = "blue-light",
                                 )),
                                 column(width = 8,
                                 fluidRow(
-                                  box(width = 12,
+                                  box(
+                                    #Prediction Output Box
+                                    width = 12,
                                     actionButton("start", "Predict!"),
                                     h1("Your Predicted Value for Total Cup Points:"),
                                     h1(verbatimTextOutput("predicted", placeholder = T)),
@@ -592,6 +600,7 @@ ui <- dashboardPage(skin = "blue-light",
                         tabItem(tabName = "data",
                           fluidRow(
                             box(
+                              #Continuous variable selection box
                               selectInput(
                                 "selects",
                                 label = "Select Continuous Variables to Include in your Data:",
@@ -603,6 +612,7 @@ ui <- dashboardPage(skin = "blue-light",
                               status = "primary",
                               title = "Columns"
                             ),
+                            #Boxes to filter by each categorical variable
                             box(
                               selectInput(
                                 "filter_country",
@@ -675,7 +685,8 @@ ui <- dashboardPage(skin = "blue-light",
                               status = "primary",
                               title = "Year"
                             ),
-                            downloadButton("download1","Download entire Table  as csv"),
+                            #Button to download data and also table showing filtered data
+                            downloadButton("download1","Download Table as a .csv"),
                             box(
                               title = "Coffee Data Filtered by User",
                               dataTableOutput("data_table"),

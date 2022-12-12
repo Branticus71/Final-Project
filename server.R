@@ -17,15 +17,17 @@ library(DT)
 library(caret)
 library(randomForest)
 library(lubridate)
-trctrl <- trainControl(method = "cv" , number = 10)
-coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
+#Reading in data
+coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
+#Variables to remove
 vec_remove_variables = c("owner", "farm_name", "lot_number","mill", "ico_number",
                          "company", "altitude", "region", "producer", "number_of_bags", "bag_weight", 
                          "in_country_partner", "harvest_year", "owner_1","certification_body", "certification_address",
                          "certification_contact", "unit_of_measurement", "altitude_low_meters", "altitude_high_meters")
+#Variables to factor
 vec_factors = c("country_of_origin","variety", "processing_method", "color", "day", "year")
-
+#Cleaning data
 df_coffee <- coffee_ratings %>% 
   #Removing non-predictive variables
   select(-vec_remove_variables) %>% 
@@ -42,16 +44,10 @@ df_coffee <- coffee_ratings %>%
   #Changing categorical variables to factors
   mutate(across(vec_factors, factor)) 
 
-
-df_continous_sum <- df_coffee %>%
-  group_by(country_of_origin) %>%
-  summarise(aroma = mean(aroma), flavor = mean(flavor), aftertaste = mean(aftertaste), acidity = mean(acidity), 
-            body = mean(body), 
-            balance = mean(balance), uniformity = mean(uniformity), clean_cup = mean(clean_cup), sweetness = mean(sweetness), 
-            moisture = mean(moisture))
-
 shinyServer(function(input, output) {
-  
+  #About Page Picture
+  img_source <- "https://cdn.luxe.digital/media/2020/05/07203610/best-coffee-beans-luxe-digital.jpg"
+  output$picture <- renderText({c('<img src="',img_source,'">')})
   #Variable Information Pages
   #Histograms/Bar charts and summary statistics/frequency tables for each variable
   output$scorePlot <- renderPlot({
@@ -332,8 +328,9 @@ shinyServer(function(input, output) {
     exp_data()
   })
   #Model Fitting Tab
+  #TrainControl settings
+  trctrl <- trainControl(method = "cv" , number = 10)
   #Changing input to a percentage for split
-
   train_split <- eventReactive(input$analysis,{
     input$split / 100
   })
