@@ -6,16 +6,16 @@ This app exists to let the user explore a coffee ratings database by viewing/cre
 
 ## Packages Needed
 
-library(shiny)
-library(shinydashboard)
-library(shinydashboardPlus)
-library(DT)
-library(shinycssloaders)
-library(tidyverse)
-library(lubridate)
-library(psych)
-library(caret)
-library(randomForest)
+-library(shiny)
+-library(shinydashboard)
+-library(shinydashboardPlus)
+-library(DT)
+-library(shinycssloaders)
+-library(tidyverse)
+-library(lubridate)
+-library(psych)
+-library(caret)
+-library(randomForest)
 
 ## Code to Install Packages
 
