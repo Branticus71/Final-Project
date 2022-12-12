@@ -4,6 +4,8 @@ library(shinydashboard)
 library(shinydashboardPlus)
 library(DT)
 library(shinycssloaders)
+library(tidyverse)
+library(lubridate)
 
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
@@ -30,7 +32,7 @@ df_coffee <- coffee_ratings %>%
   mutate(across(vec_factors, factor)) 
 
 
-ui <- dashboardPage(skin = "midnight",
+ui <- dashboardPage(skin = "blue-light",
                     
                     dashboardHeader(title="Final Project: Coffee Score Interactive Dashboard",titleWidth=1000),
                     
@@ -97,7 +99,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "score",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("Total Cup Points is the sum of a particular cups scores in the aroma, flavor, aftertaste, acidity, body, balance, uniformity, clean_cup, sweetness, and cupper points variables and is the rating for that cup of coffee."),
+                                  h4("Total Cup Points is the sum of a particular cups scores in the aroma, flavor, aftertaste, acidity, body, balance, uniformity, clean_cup, sweetness, and cupper points variables and is the rating for that cup of coffee."),
                                   plotOutput("scorePlot"),
                                   tableOutput("scoreTable")
                                 )
@@ -105,7 +107,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "variety",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("Variety is a categorical variable containing the variety of the coffee bean used. Varieties are distinct from species in that they are man made as opposed to naturally occurring. Some common examples are Sumatra, Kona, Bourbon, and Blue Mountain."),
+                                  h4("Variety is a categorical variable containing the variety of the coffee bean used. Varieties are distinct from species in that they are man made as opposed to naturally occurring. Some common examples are Sumatra, Kona, Bourbon, and Blue Mountain."),
                                   plotOutput("varietyPlot"),
                                   tableOutput("varietyTable")
                                 )
@@ -113,7 +115,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "process",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("Processing Method is a categorical variable containing the process used to remove the coffee beans from the fruit that contains them. Each is said to have an effect on the flavor profile of the bean produced."),
+                                  h4("Processing Method is a categorical variable containing the process used to remove the coffee beans from the fruit that contains them. Each is said to have an effect on the flavor profile of the bean produced."),
                                   plotOutput("procPlot"),
                                   tableOutput("procTable")
                                 )
@@ -121,7 +123,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "aroma",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The combined grade of the coffee in Fragrance and Aroma. Fragrance being the smell of the coffee beans before making the coffee and aroma being the smell of the cup of coffee itself."),
+                                  h4("The combined grade of the coffee in Fragrance and Aroma. Fragrance being the smell of the coffee beans before making the coffee and aroma being the smell of the cup of coffee itself."),
                                   plotOutput("aromaPlot"),
                                   tableOutput("aromaTable")
                                 )
@@ -129,7 +131,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "flavor",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee in areas of taste. It is evaluated based on intensity, quality, and complexity of the combined taste."),
+                                  h4("The grade of the coffee in areas of taste. It is evaluated based on intensity, quality, and complexity of the combined taste."),
                                   plotOutput("flavorPlot"),
                                   tableOutput("flavorTable")
                                 )
@@ -137,7 +139,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "taste",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee for its aftertaste, specifically the length of time any good flavors persists after swallowing."),
+                                  h4("The grade of the coffee for its aftertaste, specifically the length of time any good flavors persists after swallowing."),
                                   plotOutput("tastePlot"),
                                   tableOutput("tasteTable")
                                 )
@@ -145,7 +147,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "acidity",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee for its acidity evaluated in the context of the coffee's flavor profile. So high acidity will result in good ratings in the proper flavor profiles and low ratings in others."),
+                                  h4("The grade of the coffee for its acidity evaluated in the context of the coffee's flavor profile. So high acidity will result in good ratings in the proper flavor profiles and low ratings in others."),
                                   plotOutput("acidPlot"),
                                   tableOutput("acidTable")
                                 )
@@ -153,7 +155,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "body",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee for its body or mouthfeel. This refers to the perceived weight and texture of the coffee so comparisons such as a desirable silky versus an undesirable thin watery texture."),
+                                  h4("The grade of the coffee for its body or mouthfeel. This refers to the perceived weight and texture of the coffee so comparisons such as a desirable silky versus an undesirable thin watery texture."),
                                   plotOutput("bodyPlot"),
                                   tableOutput("bodyTable")
                                 )
@@ -161,7 +163,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "balance",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee for its balance in taste. This refers to the balance between flavors with preference given to complex flavors that do not overwhelm each other."),
+                                  h4("The grade of the coffee for its balance in taste. This refers to the balance between flavors with preference given to complex flavors that do not overwhelm each other."),
                                   plotOutput("balancePlot"),
                                   tableOutput("balanceTable")
                                 )
@@ -169,7 +171,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "uniformity",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee for its uniformity. In each test, five cups are brewed and if they taste different they are deducted points."),
+                                  h4("The grade of the coffee for its uniformity. In each test, five cups are brewed and if they taste different they are deducted points."),
                                   plotOutput("uniformPlot"),
                                   tableOutput("uniformTable")
                                 )
@@ -177,7 +179,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "sweetness",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee for its sweetness. The flavor profile of the sweetness changes across types of roasts but must be present and identifiable for a good score."),
+                                  h4("The grade of the coffee for its sweetness. The flavor profile of the sweetness changes across types of roasts but must be present and identifiable for a good score."),
                                   plotOutput("sweetPlot"),
                                   tableOutput("sweetTable")
                                 )
@@ -185,7 +187,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "clean",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The grade of the coffee for its thorough taste. In each test, five cups are brewed and if the flavor deteriorates from start to finish 2 points are docked from the score."),
+                                  h4("The grade of the coffee for its thorough taste. In each test, five cups are brewed and if the flavor deteriorates from start to finish 2 points are docked from the score."),
                                   plotOutput("cleanPlot"),
                                   tableOutput("cleanTable")
                                 )
@@ -193,7 +195,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "points",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The cupper points are simply the grade the tester would give the coffee out of ten without a strict rating system. This is more of a holistic feeling rather than scientific grade."),
+                                  h4("The cupper points are simply the grade the tester would give the coffee out of ten without a strict rating system. This is more of a holistic feeling rather than scientific grade."),
                                   plotOutput("pointsPlot"),
                                   tableOutput("pointsTable")
                                 )
@@ -201,7 +203,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "moisture",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The moisture content of the coffee beans prior to roasting."),
+                                  h4("The moisture content of the coffee beans prior to roasting."),
                                   plotOutput("moistPlot"),
                                   tableOutput("moistTable")
                                 )
@@ -209,7 +211,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "cat1",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The number of primary defects in the coffee beans. This could be insect damage, fungus damage, foreign matter, or something else."),
+                                  h4("The number of primary defects in the coffee beans. This could be insect damage, fungus damage, foreign matter, or something else."),
                                   plotOutput("cat1Plot"),
                                   tableOutput("cat1Table")
                                 )
@@ -217,7 +219,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "cat2",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The number of secondary defects in the coffee beans. This could be broken beans, partial discoloring, presence of shell, or something else."),
+                                  h4("The number of secondary defects in the coffee beans. This could be broken beans, partial discoloring, presence of shell, or something else."),
                                   plotOutput("cat2Plot"),
                                   tableOutput("cat2Table")
                                 )
@@ -225,7 +227,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "quakers",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The number of quakers in the coffee beans. These are beans that were picked before ripening and cannot roast properly."),
+                                  h4("The number of quakers in the coffee beans. These are beans that were picked before ripening and cannot roast properly."),
                                   plotOutput("quakersPlot"),
                                   tableOutput("quakersTable")
                                 )
@@ -233,7 +235,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "color",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The color of the coffee beans prior to roasting. Certain colors are considered more desirable with a greenish blue color considered ideal by many."),
+                                  h4("The color of the coffee beans prior to roasting. Certain colors are considered more desirable with a greenish blue color considered ideal by many."),
                                   plotOutput("colorPlot"),
                                   tableOutput("colorTable")
                                 )
@@ -241,7 +243,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "altitude",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The average altitude in meters of the coffee farm location. Coffee beans grow slower in higher altitudes which leads to more complex and desirable flavors."),
+                                  h4("The average altitude in meters of the coffee farm location. Coffee beans grow slower in higher altitudes which leads to more complex and desirable flavors."),
                                   plotOutput("altitudePlot"),
                                   tableOutput("altitudeTable")
                                 )
@@ -249,7 +251,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "day",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The day the coffee was rated."),
+                                  h4("The day the coffee was rated."),
                                   plotOutput("dayPlot"),
                                   tableOutput("dayTable")
                                 )
@@ -257,7 +259,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "year",
                                 fluidRow(
                                   h1("Definition"),
-                                  p("The year the coffee was rated."),
+                                  h4("The year the coffee was rated."),
                                   plotOutput("yearPlot"),
                                   tableOutput("yearTable")
                                 )
@@ -265,7 +267,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "country",
                                 fluidRow(
                                 h1("Definition"),
-                                p("The country the coffee was grown in."),
+                                h4("The country the coffee was grown in."),
                                 plotOutput("countryPlot"),
                                 tableOutput("countryTable")
                                 )
@@ -273,7 +275,7 @@ ui <- dashboardPage(skin = "midnight",
                         tabItem(tabName = "exp",
                                 fluidRow(
                                   h1("Data Exploration"),
-                                  h5("Selections only affect relevant plot types. For example, your choice for 'Y Continuous Variable' will not matter if boxplot is chosen for 'Plot Type' and the graph will instead be created based on your 'X Continous Variable' and 'Group By' selection."),
+                                  h3("Selections only affect relevant plot types. For example, your choice for 'Y Continuous Variable' will not matter if boxplot is chosen for 'Plot Type' and the graph will instead be created based on your 'X Continous Variable' and 'Group By' selection."),
                                   varSelectInput("x_variable", "X Continuous Variables:", select(df_coffee, where(is.numeric))),
                                   varSelectInput("y_variable", "Y Continuous Variables:", select(df_coffee, where(is.numeric))),
                                   selectInput("plot_type","Plot Type:", c(scatter = "scatter", "scatter + jitter" = "jitter", boxplot = "boxplot", histogram = "histogram", 
@@ -283,6 +285,7 @@ ui <- dashboardPage(skin = "midnight",
                                   selectInput("color","Colors by:",c(None = "NULL", Country = "country_of_origin", Variety = "variety", Process = "processing_method", 
                                                                      color = "color", day = "day", year = "year")),
                                   selectInput("shape","Shapes by:",c(None = "NULL", Process = "processing_method", color = "color")),
+                                  sliderInput("size", "Size of Points on Graph", min = 1, max = 10, value = 5, step = 1),
                                   plotOutput("expPlot", heigh = "600px"),
                                   dataTableOutput("expTable")
                                 ) 
@@ -582,7 +585,7 @@ ui <- dashboardPage(skin = "midnight",
                             downloadButton("download1","Download entire Table  as csv"),
                             
                             box(
-                              h1("Coffee Data"),
+                              h1("Coffee Data Filtered by User"),
                               dataTableOutput("data_table"),
                               width = 12
                             )

@@ -13,12 +13,10 @@ library(DT)
 library(psych)
 library(shiny)
 library(shinydashboard)
-library(DescTools)
-library(summarytools)
-library(corrr)
 library(DT)
 library(caret)
 library(randomForest)
+library(lubridate)
 trctrl <- trainControl(method = "cv" , number = 10)
 coffee_ratings <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
 
@@ -330,7 +328,7 @@ shinyServer(function(input, output) {
   })
   #Data Exploration Page
   get_choices <- reactive({
-    df_choices <- list(x = input$x_variable, y = input$y_variable, group = input$group, color = input$color, shape = input$shape)
+    df_choices <- list(x = input$x_variable, y = input$y_variable, group = input$group, color = input$color, shape = input$shape, size = input$size)
     
   })
   
@@ -339,16 +337,16 @@ shinyServer(function(input, output) {
   
     if(input$plot_type == "jitter"){
       g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$y)) +
-               geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape))
+               geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape ), size = df_plot$size)
     }
     if(input$plot_type == "scatter"){
       g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$y)) +
-        geom_point(aes_string(color = df_plot$color, shape = df_plot$shape))
+        geom_point(aes_string(color = df_plot$color, shape = df_plot$shape), size = df_plot$size)
     }
     if(input$plot_type == "boxplot"){
       g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x, y = df_plot$group)) +
         geom_boxplot(fill= "grey") +
-        geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape))
+        geom_jitter(aes_string(color = df_plot$color, shape = df_plot$shape), size = df_plot$size)
     }
     if(input$plot_type == "histogram"){
       g_exp <- ggplot(df_coffee, aes_string(x = df_plot$x)) +
@@ -464,39 +462,6 @@ shinyServer(function(input, output) {
       filter(variety %in% input$filter_variety) %>%
       filter(day %in% input$filter_day) %>%
       filter(year %in% input$filter_year)
-    # df_user <- df_coffee %>% 
-    #   select(input$selects) 
-    # 
-    # if(input$filter_country[1] %in% levels(df_coffee$country_of_origin)){
-    #   df_user <- df_user %>% filter(country_of_origin %in% input$filter_country)
-    # } else {
-    #   df_user
-    # }
-    # if(input$filter_process[1] %in% levels(df_coffee$processing_method)){
-    #   df_user <- df_user %>% filter(processing_method %in% input$filter_process)
-    # }else {
-    #   df_user
-    # }
-    # if(input$filter_color[1] %in% levels(df_coffee$color)){
-    #   df_user <- df_user %>% filter(color %in% input$filter_color)
-    # }else {
-    #   df_user
-    # }
-    # if(input$filter_variety[1] %in% levels(df_coffee$variety)){
-    #   df_user <- df_user %>% filter(variety %in% input$filter_variety)
-    # }else {
-    #   df_user
-    # }
-    # if(input$filter_day[1] %in% levels(df_coffee$day)){
-    #   df_user <- df_user %>% filter(day %in% input$filter_day)
-    # }else {
-    #   df_user
-    # }
-    # if(input$filter_year[1] %in% levels(df_coffee$year)){
-    #   df_user <- df_user %>% filter(year %in% input$filter_year)
-    # }else {
-    #   df_user
-    # }
   })
   
   output$data_table <- renderDataTable({
