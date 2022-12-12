@@ -339,7 +339,7 @@ ui <- dashboardPage(skin = "midnight",
                                 #h3("Summary information for chosen regression model:"),
                                 box(h3("Summary Information for Chosen Regression Model Parameters:"),
                                     withSpinner(verbatimTextOutput("reg")),
-                                    h3("RMSE from Test Data"),
+                                    h3("RMSE from Predicting on the Test Data"),
                                     withSpinner(verbatimTextOutput("rmse_reg"))
                                 ),
                                # h3("Variable Importance for Random Forest Model."),
@@ -349,20 +349,20 @@ ui <- dashboardPage(skin = "midnight",
                                      h3("Variable Importance for Random Forest Model."),
                                      h4("Note: If selected number for random predictors is greater than chosen number of predictors then output will not show."),
                                      withSpinner(verbatimTextOutput("rand_imp")),
-                                     h3("RMSE from Test Data"),
+                                     h3("RMSE from Predicting on the Test Data"),
                                      withSpinner(verbatimTextOutput("rmse_rand"))
                                 ),
                                 box(h3("Summary Information for Chosen Regression Tree Model Parameters:"),
                                     withSpinner(tableOutput("tree_table")),
                                     h3("Variable Importance for Regression Tree Model."),
                                     withSpinner(verbatimTextOutput("tree_imp")),
-                                    h3("RMSE from Test Data"),
+                                    h3("RMSE from Predicting on the Test Data"),
                                     withSpinner(verbatimTextOutput("rmse_tree"))
                                 )
                         )),
                         tabItem(tabName = "pred", 
                                 h1("Prediction Using Regression Model Created from Model Fitting Page"),
-                                h4("Note: The values of continuous variables are limited such that one cannot select values outside of the maximum or minimum value present for that variable in the data. In addition, all continuous variables default to their mean value."),
+                                h4("Note: The values of continuous variables are limited such that one cannot select values outside of the maximum or minimum value present for that variable in the data. In addition, all continuous variables default to their mean value. If you did not include a predictor in your previous model then changing it's value will not affect your predicted value."),
                                 numericInput("aroma_val",
                                              "Aroma",
                                              value = mean(df_coffee$aroma),
@@ -486,8 +486,109 @@ ui <- dashboardPage(skin = "midnight",
                                 ),
                                 
                         ),
-                        tabItem(tabName = "data")
-  
+                        tabItem(tabName = "data",
+                          fluidRow(
+                            box(
+                              selectInput(
+                                "selects",
+                                label = "Select Continuous Variables to Include in your Data:",
+                                choices =  names(select(df_coffee, where(is.numeric))),
+                                multiple = TRUE,
+                                selected = names(select(df_coffee, where(is.numeric)))
+                              ),
+                              solidHeader = TRUE,
+                              width = 3,
+                              status = "primary",
+                              title = "Columns"
+                            ),
+                            box(
+                              selectInput(
+                                "filter_country",
+                                label = "Select Country to Filter Data by:",
+                                choices = levels(df_coffee$country_of_origin),
+                                multiple = TRUE,
+                                selected = levels(df_coffee$country_of_origin)
+                              ),
+                              solidHeader = TRUE,
+                              width = 3,
+                              status = "primary",
+                              title = "Country"
+                            ),
+                            box(
+                              selectInput(
+                                "filter_process",
+                                label = "Select Processing Method to Filter Data by:",
+                                choices = levels(df_coffee$processing_method),
+                                multiple = TRUE,
+                                selected = levels(df_coffee$processing_method)
+                              ),
+                              solidHeader = TRUE,
+                              width = 3,
+                              status = "primary",
+                              title = "Processing Method"
+                            ),
+                            box(
+                              selectInput(
+                                "filter_color",
+                                label = "Select Color to Filter Data by:",
+                                choices = levels(df_coffee$color),
+                                multiple = TRUE,
+                                selected = levels(df_coffee$color)
+                              ),
+                              solidHeader = TRUE,
+                              width = 3,
+                              status = "primary",
+                              title = "Color"
+                            ),
+                            box(
+                              selectInput(
+                                "filter_variety",
+                                label = "Select Variety to Filter Data by:",
+                                choices = levels(df_coffee$variety),
+                                multiple = TRUE,
+                                selected = levels(df_coffee$variety)
+                              ),
+                              solidHeader = TRUE,
+                              width = 3,
+                              status = "primary",
+                              title = "Variety"
+                            ),
+                            box(
+                              selectInput(
+                                "filter_day",
+                                label = "Select Day to Filter Data by:",
+                                choices = levels(df_coffee$day),
+                                multiple = TRUE,
+                                selected = levels(df_coffee$day)
+                              ),
+                              solidHeader = TRUE,
+                              width = 3,
+                              status = "primary",
+                              title = "Day"
+                            ),
+                            box(
+                              selectInput(
+                                "filter_year",
+                                label = "Select Year to Filter Data by:",
+                                choices = levels(df_coffee$year),
+                                multiple = TRUE,
+                                selected = levels(df_coffee$year)
+                              ),
+                              solidHeader = TRUE,
+                              width = 3,
+                              status = "primary",
+                              title = "Year"
+                            ),
+                            downloadButton("download1","Download entire Table  as csv"),
+                            
+                            box(
+                              h1("Coffee Data"),
+                              dataTableOutput("data_table"),
+                              width = 12
+                            )
+                          )  
+                        )
+                        
                       )
   
   

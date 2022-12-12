@@ -440,10 +440,6 @@ shinyServer(function(input, output) {
   output$rmse_rand <- renderPrint(postResample(rand_pred(), testData()$total_cup_points))
   output$rmse_tree <- renderPrint(postResample(tree_pred(), testData()$total_cup_points))
   
-  reg_test <- train(total_cup_points ~ ., data = df_coffee,
-                    preProcess = c("center", "scale"),
-                    method = "lm",
-                    trControl = trctrl)
   #Prediction Page
   result_pred <- eventReactive(input$start, {
     inputData <- data.frame(aroma = input$aroma_val, flavor = input$flavor_val, aftertaste = input$aftertaste_val, acidity = input$acidity_val, body = input$body_val,
@@ -456,4 +452,62 @@ shinyServer(function(input, output) {
     paste0(input_pred_round)
   })
   output$predicted <- renderPrint(result_pred())
+  
+  
+  #Data Page
+  user_data <- reactive({
+    df_coffee %>%
+      select(c(input$selects, vec_factors)) %>%
+      filter(country_of_origin %in% input$filter_country) %>%
+      filter(processing_method %in% input$filter_process) %>%
+      filter(color %in% input$filter_color) %>%
+      filter(variety %in% input$filter_variety) %>%
+      filter(day %in% input$filter_day) %>%
+      filter(year %in% input$filter_year)
+    # df_user <- df_coffee %>% 
+    #   select(input$selects) 
+    # 
+    # if(input$filter_country[1] %in% levels(df_coffee$country_of_origin)){
+    #   df_user <- df_user %>% filter(country_of_origin %in% input$filter_country)
+    # } else {
+    #   df_user
+    # }
+    # if(input$filter_process[1] %in% levels(df_coffee$processing_method)){
+    #   df_user <- df_user %>% filter(processing_method %in% input$filter_process)
+    # }else {
+    #   df_user
+    # }
+    # if(input$filter_color[1] %in% levels(df_coffee$color)){
+    #   df_user <- df_user %>% filter(color %in% input$filter_color)
+    # }else {
+    #   df_user
+    # }
+    # if(input$filter_variety[1] %in% levels(df_coffee$variety)){
+    #   df_user <- df_user %>% filter(variety %in% input$filter_variety)
+    # }else {
+    #   df_user
+    # }
+    # if(input$filter_day[1] %in% levels(df_coffee$day)){
+    #   df_user <- df_user %>% filter(day %in% input$filter_day)
+    # }else {
+    #   df_user
+    # }
+    # if(input$filter_year[1] %in% levels(df_coffee$year)){
+    #   df_user <- df_user %>% filter(year %in% input$filter_year)
+    # }else {
+    #   df_user
+    # }
+  })
+  
+  output$data_table <- renderDataTable({
+    user_data() 
+  })
+  output$download1 <- downloadHandler(
+    filename = function() {
+      paste("coffee_", Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(user_data(), file)
+    }
+  )
 })

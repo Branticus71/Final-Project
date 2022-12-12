@@ -127,5 +127,13 @@ select(testData, outcome)
    postResample(pred = predt, obs = testData$total_cup_points)
 str(fit)
 levels(df_coffee$day)
+levelsss <- levels(df_coffee$country_of_origin)
+str(levelsss)
+input1 <- c( "Brazil", "China", "Colombia")
+input2 <- c("Canada", "Alaska")
+df_coffee %>% filter(if_else(input1 %in% levels(country_of_origin), country_of_origin %in% input1, TRUE ))
+df_coffee
+if_else(input1 %in% levels(df_coffee$country_of_origin), df_test <- filter(df_coffee$country_of_origin %in% input1), df_coffee)
+df_coffee$country_of_origin[1]
 ```
 
