@@ -690,6 +690,8 @@ ui <- dashboardPage(skin = "blue-light",
                             box(
                               title = "Coffee Data Filtered by User",
                               dataTableOutput("data_table"),
+                              status = "primary",
+                              solidHeader = TRUE,
                               width = 12
                             )
                           )  

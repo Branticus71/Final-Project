@@ -45,9 +45,11 @@ df_coffee <- coffee_ratings %>%
   mutate(across(vec_factors, factor)) 
 
 shinyServer(function(input, output) {
+  
   #About Page Picture
   img_source <- "https://cdn.luxe.digital/media/2020/05/07203610/best-coffee-beans-luxe-digital.jpg"
   output$picture <- renderText({c('<img src="',img_source,'">')})
+  
   #Variable Information Pages
   #Histograms/Bar charts and summary statistics/frequency tables for each variable
   output$scorePlot <- renderPlot({
@@ -58,7 +60,6 @@ shinyServer(function(input, output) {
   output$scoreTable <- renderTable({
     tab_score <- describe(df_coffee$total_cup_points, fast = TRUE) %>%
                 select(-vars)
-    
   })
   output$varietyPlot <- renderPlot({
     g_variety <- ggplot(df_coffee, aes(x = variety)) +
@@ -327,6 +328,7 @@ shinyServer(function(input, output) {
   output$expTable <- renderDataTable({
     exp_data()
   })
+  
   #Model Fitting Tab
   #TrainControl settings
   trctrl <- trainControl(method = "cv" , number = 10)
@@ -334,9 +336,11 @@ shinyServer(function(input, output) {
   train_split <- eventReactive(input$analysis,{
     input$split / 100
   })
+  #store mtry
   select_mtry <- eventReactive(input$analysis,{
     input$mtry
   })
+  #store cp
   select_cp <- eventReactive(input$analysis,{
     input$cp
   })
@@ -416,7 +420,6 @@ shinyServer(function(input, output) {
     paste0(input_pred_round)
   })
   output$predicted <- renderPrint(result_pred())
-  
   
   #Data Page
   #Filtering data based on user choices
